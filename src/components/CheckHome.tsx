@@ -25,10 +25,14 @@ import {
 } from "@heroicons/react/24/outline";
 import {
   Bars3Icon,
+  CameraIcon,
   ChevronRightIcon,
   ChevronUpDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
+import { avecURL } from "@/constants/const";
+import useSWR from "swr";
+import { ForbidList } from "./ForbidList";
 
 const navigation = [
   // { name: "Projects", href: "#", icon: FolderIcon, current: false },
@@ -197,8 +201,10 @@ function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Example() {
+export default function CheckHome() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+  // const { data, error } = useSWR(avecURL + "", fetcher);
 
   return (
     <html className="h-full bg-gray-900">
@@ -291,7 +297,7 @@ export default function Example() {
                         </li>
                         <li>
                           <div className="text-xs font-semibold leading-6 text-gray-400">
-                            트리피 목록
+                            여행 목록
                           </div>
                           <ul role="list" className="-mx-2 mt-2 space-y-1">
                             {teams.map((team) => (
@@ -375,7 +381,7 @@ export default function Example() {
                 </li>
                 <li>
                   <div className="text-xs font-semibold leading-6 text-gray-400">
-                    트리피 목록
+                    여행 목록
                   </div>
                   <ul role="list" className="-mx-2 mt-2 space-y-1">
                     {teams.map((team) => (
@@ -435,17 +441,36 @@ export default function Example() {
                   Search
                 </label>
                 <div className="relative w-full">
-                  <MagnifyingGlassIcon
+                  {/* <MagnifyingGlassIcon
                     className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-500"
                     aria-hidden="true"
-                  />
+                  /> */}
+                  <input type="text" className="hidden" />
                   <input
+                    value={searchKeyword}
+                    onChange={(e) => {
+                      setSearchKeyword(e.currentTarget.value);
+                    }}
+                    // onKeyUp={(e) => {
+                    //   if (e.key === "Enter") {
+                    //     e.preventDefault();
+                    //     setSearchKeyword(e.currentTarget.value);
+                    //   }
+                    // }}
                     autoComplete="off"
                     id="search-field"
-                    className="block h-full w-full border-0 bg-transparent py-0 pl-8 pr-0 text-white focus:ring-0 sm:text-sm"
+                    className="block h-full w-full border-0 bg-transparent py-0 pr-0 text-white focus:ring-0 sm:text-sm"
                     placeholder="반입 물품을 확인해보세요"
-                    type="search"
-                    name="search"
+                    // type="search"
+                    // name="search"
+                  />
+                  <CameraIcon
+                    onClick={() => {
+                      alert("카메라를 실행합니다.");
+                    }}
+                    className=" cursor-pointer absolute inset-y-0 right-0 h-full w-5 text-gray-500"
+                    // pointer-events-none
+                    aria-hidden="true"
                   />
                 </div>
               </form>
@@ -521,72 +546,8 @@ export default function Example() {
               </Menu>
             </header>
 
-            {/* Deployment list */}
-            <ul role="list" className="divide-y divide-white/5">
-              {deployments.map((deployment) => (
-                <li
-                  key={deployment.id}
-                  className="relative flex items-center space-x-4 px-4 py-4 sm:px-6 lg:px-8"
-                >
-                  <div className="min-w-0 flex-auto">
-                    <div className="flex items-center gap-x-3">
-                      <div
-                        className={classNames(
-                          statuses[deployment.status],
-                          "flex-none rounded-full p-1"
-                        )}
-                      >
-                        <div className="h-2 w-2 rounded-full bg-current" />
-                      </div>
-                      <h2 className="min-w-0 text-sm font-semibold leading-6 text-white">
-                        <a href={deployment.href} className="flex gap-x-2">
-                          <span className="truncate">
-                            {deployment.teamName}
-                          </span>
-                          <span className="text-gray-400">/</span>
-                          <span className="whitespace-nowrap">
-                            {deployment.projectName}
-                          </span>
-                          <span className="absolute inset-0" />
-                        </a>
-                      </h2>
-                    </div>
-                    <div className="mt-3 flex items-center gap-x-2.5 text-xs leading-5 text-gray-400">
-                      <p className="truncate">{deployment.description}</p>
-                      {/* <svg
-                        viewBox="0 0 2 2"
-                        className="h-0.5 w-0.5 flex-none fill-gray-300"
-                      >
-                        <circle cx={1} cy={1} r={1} />
-                      </svg> */}
-                      {/* <p className="whitespace-nowrap">
-                        {deployment.statusText}
-                      </p> */}
-                    </div>
-                  </div>
-                  <div
-                    className={classNames(
-                      environments[deployment.environment],
-                      "rounded-full flex-none py-1 px-2 text-xs font-medium ring-1 ring-inset"
-                    )}
-                  >
-                    {deployment.environment}
-                  </div>
-                  <div
-                    className={classNames(
-                      environments[deployment.environment],
-                      "rounded-full flex-none py-1 px-2 text-xs font-medium ring-1 ring-inset"
-                    )}
-                  >
-                    {deployment.environment}
-                  </div>
-                  <ChevronRightIcon
-                    className="h-5 w-5 flex-none text-gray-400"
-                    aria-hidden="true"
-                  />
-                </li>
-              ))}
-            </ul>
+            {/* Page sections */}
+            <ForbidList keyword={searchKeyword} />
           </main>
 
           {/* Activity feed */}
@@ -604,7 +565,11 @@ export default function Example() {
             </header>
             <ul role="list" className="divide-y divide-white/5">
               {activityItems.map((item) => (
-                <li key={item.commit} className="px-4 py-4 sm:px-6 lg:px-8">
+                <li
+                  key={item.commit}
+                  className="cursur-pointer px-4 py-4 sm:px-6 lg:px-8"
+                  onClick={() => setSearchKeyword(item.user.name as any)}
+                >
                   <div className="flex items-center gap-x-3">
                     <img
                       src={item.user.imageUrl}
