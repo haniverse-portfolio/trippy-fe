@@ -10,6 +10,7 @@ import {
   ChevronUpDownIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/20/solid";
+import { useSearchKeyword } from "@/hooks/states";
 const fetcher = (url: string) =>
   fetch(url).then((response) => {
     if (!response.ok) {
@@ -44,19 +45,20 @@ const environments: { [key: string]: string } = {
   Carry: "text-green-400 bg-green-400/10 ring-gray-400/20",
   Baggage: "text-rose-400 bg-rose-400/10 ring-rose-400/30",
 };
-export function ForbidList({ keyword }: { keyword: string }) {
-  const { data, error } = useSWR(avecURL + keyword, fetcher, {
+export function ForbidList() {
+  const { data: searchKeyword, setData: setSearchKeyword } = useSearchKeyword();
+  const { data, error } = useSWR(avecURL + searchKeyword, fetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: true,
     revalidateOnReconnect: true,
   });
   // refreshInterval: 1000,
-  if (keyword === "")
+  if (searchKeyword === "")
     return <div className="text-white">반입 물품을 입력해주세요.</div>;
 
   if (error) {
     console.error("Fetch error:", error);
-    return <div>에러</div>;
+    return <div className="text-white">에러</div>;
   }
   // 로딩
   if (!data) {

@@ -1,38 +1,24 @@
-/*
-  This example requires some changes to your config:
-  
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/forms'),
-    ],
-  }
-  ```
-*/
-import { Fragment, useState } from "react";
+import { Fragment, useRef, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
-import {
-  ChartBarSquareIcon,
-  Cog6ToothIcon,
-  FolderIcon,
-  GlobeAltIcon,
-  ServerIcon,
-  SignalIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { ServerIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   Bars3Icon,
   CameraIcon,
-  ChevronRightIcon,
   ChevronUpDownIcon,
-  MagnifyingGlassIcon,
+  PhotoIcon,
 } from "@heroicons/react/20/solid";
-import { avecURL } from "@/constants/const";
+import { activityItems, teams, uploadURL } from "@/constants/const";
 import useSWR from "swr";
 import { ForbidList } from "./ForbidList";
+import {
+  useCameraOpened,
+  useCapturedImage,
+  useCheckSidebarOpened,
+  useMediaStream,
+  useSearchKeyword,
+} from "@/hooks/states";
+import CameraDrawer from "./CameraDrawer";
+import CameraComponent from "./CameraComponent";
 
 const navigation = [
   // { name: "Projects", href: "#", icon: FolderIcon, current: false },
@@ -42,172 +28,132 @@ const navigation = [
   // { name: "Usage", href: "#", icon: ChartBarSquareIcon, current: false },
   // { name: "Settings", href: "#", icon: Cog6ToothIcon, current: false },
 ];
-const teams = [
-  {
-    id: 1,
-    name: "🇰🇷 KOR →  🇹🇭 THA",
-    href: "#",
-    initial: "1",
-    current: false,
-  },
-  {
-    id: 2,
-    name: "🇰🇷 KOR →  🇺🇸 USA",
-    href: "#",
-    initial: "2",
-    current: false,
-  },
-  { id: 3, name: "🇰🇷 KOR →  🇯🇵 JPN", href: "#", initial: "3", current: false },
-];
-
-const statuses: { [key: string]: string } = {
-  offline: "text-gray-500 bg-gray-100/10",
-  online: "text-green-400 bg-green-400/10",
-  error: "text-rose-400 bg-rose-400/10",
-};
-
-const environments: { [key: string]: string } = {
-  Carry: "text-green-400 bg-green-400/10 ring-gray-400/20",
-  Baggage: "text-indigo-400 bg-indigo-400/10 ring-indigo-400/30",
-};
-const deployments = [
-  {
-    id: 1,
-    href: "#",
-    projectName: "지포라이터",
-    teamName: "라이터",
-    status: "offline",
-    statusText: "1분 32초 전",
-    description: "Deploys from GitHub",
-    environment: "Carry",
-  },
-  // More deployments...
-];
-const activityItems = [
-  {
-    user: {
-      name: "보조배터리",
-      imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2305",
-    },
-    projectName: "ios-app",
-    commit: "2d89f0c8",
-    branch: "main",
-    date: "1위",
-    dateTime: "2023-01-23T11:00",
-  },
-  {
-    user: {
-      name: "화장품",
-      imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2309",
-    },
-    projectName: "ios-app",
-    commit: "2d89f0c8",
-    branch: "main",
-    date: "2위",
-    dateTime: "2023-01-23T11:00",
-  },
-  {
-    user: {
-      name: "충전기",
-      imageUrl: "	https://www.avsec365.or.kr/etc/file/image.do?fileId=2308",
-    },
-    projectName: "ios-app",
-    commit: "2d89f0c8",
-    branch: "main",
-    date: "3위",
-    dateTime: "2023-01-23T11:00",
-  },
-  {
-    user: {
-      name: "스프레이",
-      imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2307",
-    },
-    projectName: "ios-app",
-    commit: "2d89f0c8",
-    branch: "main",
-    date: "4위",
-    dateTime: "2023-01-23T11:00",
-  },
-  {
-    user: {
-      name: "노트북",
-      imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=1857",
-    },
-    projectName: "ios-app",
-    commit: "2d89f0c8",
-    branch: "main",
-    date: "5위",
-    dateTime: "2023-01-23T11:00",
-  },
-  {
-    user: {
-      name: "라이터",
-      imageUrl: "	https://www.avsec365.or.kr/etc/file/image.do?fileId=2304",
-    },
-    projectName: "ios-app",
-    commit: "2d89f0c8",
-    branch: "main",
-    date: "6위",
-    dateTime: "2023-01-23T11:00",
-  },
-  {
-    user: {
-      name: "물",
-      imageUrl: "	https://www.avsec365.or.kr/etc/file/image.do?fileId=1829",
-    },
-    projectName: "ios-app",
-    commit: "2d89f0c8",
-    branch: "main",
-    date: "7위",
-    dateTime: "2023-01-23T11:00",
-  },
-  {
-    user: {
-      name: "배터리",
-      imageUrl: "	https://www.avsec365.or.kr/etc/file/image.do?fileId=2306",
-    },
-    projectName: "ios-app",
-    commit: "2d89f0c8",
-    branch: "main",
-    date: "8위",
-    dateTime: "2023-01-23T11:00",
-  },
-  {
-    user: {
-      name: "전자담배",
-      imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=1357",
-    },
-    projectName: "ios-app",
-    commit: "2d89f0c8",
-    branch: "main",
-    date: "9위",
-    dateTime: "2023-01-23T11:00",
-  },
-  {
-    user: {
-      name: "칼",
-      imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=1972",
-    },
-    projectName: "ios-app",
-    commit: "2d89f0c8",
-    branch: "main",
-    date: "10위",
-    dateTime: "2023-01-23T11:00",
-  },
-  // More items...
-];
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
 
 export default function CheckHome() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchKeyword, setSearchKeyword] = useState("");
+  const { data: sidebarOpen, setData: setSidebarOpen } =
+    useCheckSidebarOpened();
+  const { data: searchKeyword, setData: setSearchKeyword } = useSearchKeyword();
+  const { data: isCameraOpened, setData: setCameraOpened } = useCameraOpened();
   // const { data, error } = useSWR(avecURL + "", fetcher);
+
+  const { data: mediaStream, setData: setMediaStream } = useMediaStream();
+  const { data: capturedImage, setData: setCapturedImage } = useCapturedImage();
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isCameraStarted, setIsCameraStarted] = useState(false);
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+      });
+      setMediaStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+      setIsCameraStarted(true);
+    } catch (error) {
+      console.error("카메라 액세스 실패:", error);
+    }
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current && isCameraStarted) {
+      const canvas = document.createElement("canvas");
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const context = canvas.getContext("2d");
+      if (context) {
+        context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        const capturedImageDataUrl = canvas.toDataURL("image/jpeg");
+        setCapturedImage(capturedImageDataUrl);
+      }
+    }
+  };
+
+  const handleButtonClick = () => {
+    if (!isCameraStarted) {
+      startCamera();
+    } else {
+      capturePhoto();
+    }
+  };
+
+  const fetcher = async (url: string, capturedImage?: string): Promise<any> => {
+    if (!capturedImage) return null;
+
+    // Base64 이미지 데이터를 Blob으로 변환
+    const response = await fetch(capturedImage);
+    const blob = await response.blob();
+    const file = new File([blob], "captured.jpg", { type: "image/jpeg" });
+
+    // FormData 객체 생성
+    const formData = new FormData();
+    formData.append("file", file);
+
+    // POST 요청
+    const fetchResponse = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!fetchResponse.ok) {
+      throw new Error("Network response was not ok");
+    }
+    return fetchResponse.json();
+  };
+
+  function CameraSection() {
+    const { data: searchKeyword, setData: setSearchKeyword } =
+      useSearchKeyword();
+    const { data, error } = useSWR(uploadURL, fetcher, {
+      revalidateIfStale: false,
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true,
+    });
+
+    if (error) {
+      console.error("Fetch error:", error);
+      return <div className="text-white">카메라 에러</div>;
+    }
+    // 로딩
+    if (!data) {
+      return <div className="text-white">AI 서버 분석 중</div>;
+    }
+    console.log(data);
+    return (
+      <div
+        className="bg-black relative"
+        style={{ height: "calc(100vh - 4rem)" }}
+      >
+        <div className="flex h-full items-center justify-center">
+          <video
+            className="w-full max-h-full object-contain"
+            ref={videoRef}
+            autoPlay
+          />
+        </div>
+
+        <button
+          className="cursor-pointer absolute bottom-16 w-24 h-24 bg-white rounded-full mx-auto border-double border-2 border-gray-300 left-1/2 transform -translate-x-1/2"
+          onClick={handleButtonClick}
+        >
+          <CameraIcon
+            className="cursor-pointer w-10 m-auto text-gray-400"
+            // pointer-events-none
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <html className="h-full bg-gray-900">
+      {/* <CameraDrawer /> */}
       <body className="h-full">
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
@@ -262,6 +208,7 @@ export default function CheckHome() {
                     </div>
                   </Transition.Child>
                   {/* Sidebar component, swap this element with another sidebar if you like */}
+
                   <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 ring-1 ring-white/10">
                     <div className="flex h-16 shrink-0 items-center">
                       <img
@@ -449,6 +396,7 @@ export default function CheckHome() {
                   <input
                     value={searchKeyword}
                     onChange={(e) => {
+                      if (e.currentTarget.value !== "") setCameraOpened(false);
                       setSearchKeyword(e.currentTarget.value);
                     }}
                     // onKeyUp={(e) => {
@@ -466,9 +414,19 @@ export default function CheckHome() {
                   />
                   <CameraIcon
                     onClick={() => {
-                      alert("카메라를 실행합니다.");
+                      setSearchKeyword("");
+                      startCamera();
+                      setCameraOpened(true);
                     }}
-                    className=" cursor-pointer absolute inset-y-0 right-0 h-full w-5 text-gray-500"
+                    className="cursor-pointer absolute inset-y-0 right-10 h-full w-5 text-gray-500"
+                    // pointer-events-none
+                    aria-hidden="true"
+                  />
+                  <PhotoIcon
+                    onClick={() => {
+                      alert("사진 불러오기");
+                    }}
+                    className="cursor-pointer absolute inset-y-0 right-0 h-full w-5 text-gray-500"
                     // pointer-events-none
                     aria-hidden="true"
                   />
@@ -478,76 +436,80 @@ export default function CheckHome() {
           </div>
 
           <main className="lg:pr-96">
-            <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-              <h1 className="text-base font-semibold leading-7 text-white">
-                반입 물품 확인
-              </h1>
+            {isCameraOpened === true && searchKeyword === "" ? (
+              <CameraSection />
+            ) : (
+              <div className="hidden lg:block">
+                <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+                  <h1 className="text-base font-semibold leading-7 text-white">
+                    반입 물품 확인
+                  </h1>
 
-              {/* Sort dropdown */}
-              <Menu as="div" className="relative">
-                <Menu.Button className="flex items-center gap-x-1 text-sm font-medium leading-6 text-white">
-                  정렬 기준
-                  <ChevronUpDownIcon
-                    className="h-5 w-5 text-gray-500"
-                    aria-hidden="true"
-                  />
-                </Menu.Button>
-                <Transition
-                  as={Fragment}
-                  enter="transition ease-out duration-100"
-                  enterFrom="transform opacity-0 scale-95"
-                  enterTo="transform opacity-100 scale-100"
-                  leave="transition ease-in duration-75"
-                  leaveFrom="transform opacity-100 scale-100"
-                  leaveTo="transform opacity-0 scale-95"
-                >
-                  <Menu.Items className="absolute right-0 z-10 mt-2.5 w-40 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={classNames(
-                            active ? "bg-gray-50" : "",
-                            "block px-3 py-1 text-sm leading-6 text-gray-900"
+                  <Menu as="div" className="relative">
+                    <Menu.Button className="flex items-center gap-x-1 text-sm font-medium leading-6 text-white">
+                      정렬 기준
+                      <ChevronUpDownIcon
+                        className="h-5 w-5 text-gray-500"
+                        aria-hidden="true"
+                      />
+                    </Menu.Button>
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
+                    >
+                      <Menu.Items className="absolute right-0 z-10 mt-2.5 w-40 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? "bg-gray-50" : "",
+                                "block px-3 py-1 text-sm leading-6 text-gray-900"
+                              )}
+                            >
+                              이름
+                            </a>
                           )}
-                        >
-                          이름
-                        </a>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={classNames(
-                            active ? "bg-gray-50" : "",
-                            "block px-3 py-1 text-sm leading-6 text-gray-900"
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? "bg-gray-50" : "",
+                                "block px-3 py-1 text-sm leading-6 text-gray-900"
+                              )}
+                            >
+                              날짜순
+                            </a>
                           )}
-                        >
-                          날짜순
-                        </a>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={classNames(
-                            active ? "bg-gray-50" : "",
-                            "block px-3 py-1 text-sm leading-6 text-gray-900"
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <a
+                              href="#"
+                              className={classNames(
+                                active ? "bg-gray-50" : "",
+                                "block px-3 py-1 text-sm leading-6 text-gray-900"
+                              )}
+                            >
+                              위험도
+                            </a>
                           )}
-                        >
-                          위험도
-                        </a>
-                      )}
-                    </Menu.Item>
-                  </Menu.Items>
-                </Transition>
-              </Menu>
-            </header>
+                        </Menu.Item>
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
+                </header>
 
-            {/* Page sections */}
-            <ForbidList keyword={searchKeyword} />
+                <ForbidList />
+              </div>
+            )}
           </main>
 
           {/* Activity feed */}
@@ -568,7 +530,10 @@ export default function CheckHome() {
                 <li
                   key={item.commit}
                   className="cursur-pointer px-4 py-4 sm:px-6 lg:px-8"
-                  onClick={() => setSearchKeyword(item.user.name as any)}
+                  onClick={() => {
+                    setSearchKeyword(item.user.name as any);
+                    setCameraOpened(false);
+                  }}
                 >
                   <div className="flex items-center gap-x-3">
                     <img
@@ -602,4 +567,13 @@ export default function CheckHome() {
       </body>
     </html>
   );
+}
+
+{
+  /* {capturedImage && (
+        <div>
+          <h2>캡처된 이미지</h2>
+          <img src={capturedImage} alt="Captured" />
+        </div>
+      )} */
 }
