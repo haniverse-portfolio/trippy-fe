@@ -161,7 +161,7 @@ export default function CheckHome() {
                 </div>
                 <h2 className="min-w-0 text-sm font-semibold leading-6 text-white">
                   <a href={"#"} className="flex gap-x-2">
-                    <span className="truncate">{cur.name}</span>
+                    <span className="truncate">{cur.korName}</span>
                     <span className="text-gray-400">/</span>
                     <span className="whitespace-nowrap"></span>
                     <span className="absolute inset-0" />
