@@ -74,31 +74,18 @@ export function ForbidList() {
               <div className="flex items-center gap-x-3">
                 <div
                   className={classNames(
-                    statuses[statusKey], // 여기에 동적으로 상태 적용
+                    statuses[statusKey], // 동적 상태 적용
                     "flex-none rounded-full p-1"
                   )}
                 >
                   <div className="h-2 w-2 rounded-full bg-current" />
                 </div>
                 <div className="flex flex-auto min-w-0">
-                  <h2 className="min-w-0 text-sm font-semibold leading-6 text-white flex-none">
+                  <h2 className="min-w-0 text-sm font-semibold leading-6 text-white flex-auto overflow-hidden">
                     <a href={"#"} className="flex gap-x-2 items-center">
-                      <span>{cur.korName}</span>
-                      <span className="text-gray-400">/&nbsp;</span>
+                      <span className="truncate">{cur.korName}</span>
                     </a>
                   </h2>
-                  <span className="flex-auto min-w-0 overflow-hidden">
-                    <span
-                      className=" text-xs text-gray-400"
-                      style={{
-                        maxWidth: "100%",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                    >
-                      {cur.specialRule}
-                    </span>
-                  </span>
                 </div>
               </div>
             </div>
