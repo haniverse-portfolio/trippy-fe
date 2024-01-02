@@ -1,6 +1,6 @@
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 
-export default function Example() {
+export default function IndexHero() {
   return (
     <div className="relative isolate overflow-hidden bg-gray-900">
       <svg

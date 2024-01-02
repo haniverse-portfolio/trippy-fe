@@ -120,9 +120,9 @@ export default function CheckHome() {
       return <div className="text-white">카메라 에러</div>;
     }
     // 로딩
-    if (!data) {
-      return <div className="text-white">AI 서버 분석 중</div>;
-    }
+    // if (!data) {
+    //   return <div className="text-white">AI 서버 분석 중</div>;
+    // }
     console.log(data);
     return (
       <div
