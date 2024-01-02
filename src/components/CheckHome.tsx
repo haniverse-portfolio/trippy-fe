@@ -4,6 +4,7 @@ import { ServerIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   Bars3Icon,
   CameraIcon,
+  ChevronRightIcon,
   ChevronUpDownIcon,
   PhotoIcon,
 } from "@heroicons/react/20/solid";
@@ -12,14 +13,22 @@ import useSWR from "swr";
 import { ForbidList } from "./ForbidList";
 import {
   useCameraOpened,
+  useCameraStarted,
   useCapturedImage,
   useCheckSidebarOpened,
   useMediaStream,
   useSearchKeyword,
 } from "@/hooks/states";
-import CameraDrawer from "./CameraDrawer";
-import CameraComponent from "./CameraComponent";
 
+const statuses: { [key: string]: string } = {
+  offline: "text-gray-500 bg-gray-100/10",
+  online: "text-green-400 bg-green-400/10",
+  error: "text-rose-400 bg-rose-400/10",
+};
+const environments: { [key: string]: string } = {
+  Carry: "text-green-400 bg-green-400/10 ring-gray-400/20",
+  Baggage: "text-rose-400 bg-rose-400/10 ring-rose-400/30",
+};
 const navigation = [
   // { name: "Projects", href: "#", icon: FolderIcon, current: false },
   { name: "물품 확인", href: "#", icon: ServerIcon, current: true },
@@ -38,12 +47,13 @@ export default function CheckHome() {
     useCheckSidebarOpened();
   const { data: searchKeyword, setData: setSearchKeyword } = useSearchKeyword();
   const { data: isCameraOpened, setData: setCameraOpened } = useCameraOpened();
-  // const { data, error } = useSWR(avecURL + "", fetcher);
 
   const { data: mediaStream, setData: setMediaStream } = useMediaStream();
   const { data: capturedImage, setData: setCapturedImage } = useCapturedImage();
+  const { data: isCameraStarted, setData: setIsCameraStarted } =
+    useCameraStarted();
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const [isCameraStarted, setIsCameraStarted] = useState(false);
 
   const startCamera = async () => {
     try {
@@ -51,9 +61,14 @@ export default function CheckHome() {
         video: { facingMode: "environment" },
       });
       setMediaStream(stream);
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        await new Promise<void>((resolve) => {
+          videoRef.current!.onloadedmetadata = () => resolve();
+        });
       }
+
       setIsCameraStarted(true);
     } catch (error) {
       console.error("카메라 액세스 실패:", error);
@@ -70,19 +85,20 @@ export default function CheckHome() {
         context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
         const capturedImageDataUrl = canvas.toDataURL("image/jpeg");
         setCapturedImage(capturedImageDataUrl);
+        // 카메라 스트림 종료
+        if (mediaStream !== null && mediaStream !== undefined)
+          mediaStream.getTracks().forEach((track) => track.stop());
       }
     }
   };
 
-  const handleButtonClick = () => {
-    if (!isCameraStarted) {
-      startCamera();
-    } else {
-      capturePhoto();
-    }
+  const handleButtonClick = async () => {
+    capturePhoto();
+    await setIsCameraStarted(false);
   };
 
-  const fetcher = async (url: string, capturedImage?: string): Promise<any> => {
+  const fetcher = async (args: [string, string]): Promise<any> => {
+    const [url, capturedImage] = args;
     if (!capturedImage) return null;
 
     // Base64 이미지 데이터를 Blob으로 변환
@@ -94,7 +110,7 @@ export default function CheckHome() {
     const formData = new FormData();
     formData.append("file", file);
 
-    // POST 요청
+    // POST 요청을 URL로 보냄
     const fetchResponse = await fetch(url, {
       method: "POST",
       body: formData,
@@ -107,47 +123,84 @@ export default function CheckHome() {
   };
 
   function CameraSection() {
-    const { data: searchKeyword, setData: setSearchKeyword } =
-      useSearchKeyword();
-    const { data, error } = useSWR(uploadURL, fetcher, {
-      revalidateIfStale: false,
-      revalidateOnFocus: true,
-      revalidateOnReconnect: true,
-    });
+    const { data: capturedImage } = useCapturedImage(); // capturedImage 상태
+    const { data, error } = useSWR(
+      capturedImage ? [uploadURL, capturedImage] : null, // 키에 capturedImage 포함
+      fetcher,
+      {
+        revalidateIfStale: false,
+        revalidateOnFocus: false,
+        revalidateOnReconnect: false,
+      }
+    );
 
     if (error) {
       console.error("Fetch error:", error);
       return <div className="text-white">카메라 에러</div>;
     }
-    // 로딩
-    // if (!data) {
-    //   return <div className="text-white">AI 서버 분석 중</div>;
-    // }
+    if (!data) {
+      return <div className="text-white">AI 서버 분석 중</div>;
+    }
     console.log(data);
     return (
-      <div
-        className="bg-black relative"
-        style={{ height: "calc(100vh - 4rem)" }}
-      >
-        <div className="flex h-full items-center justify-center">
-          <video
-            className="w-full max-h-full object-contain"
-            ref={videoRef}
-            autoPlay
-          />
-        </div>
-
-        <button
-          className="cursor-pointer absolute bottom-16 w-24 h-24 bg-white rounded-full mx-auto border-double border-2 border-gray-300 left-1/2 transform -translate-x-1/2"
-          onClick={handleButtonClick}
-        >
-          <CameraIcon
-            className="cursor-pointer w-10 m-auto text-gray-400"
-            // pointer-events-none
-            aria-hidden="true"
-          />
-        </button>
-      </div>
+      <ul role="list" className="divide-y divide-white/5">
+        {data.map((cur: any) => (
+          <li
+            key={0}
+            className="relative flex items-center space-x-4 px-4 py-4 sm:px-6 lg:px-8"
+          >
+            <div className="min-w-0 flex-auto">
+              <div className="flex items-center gap-x-3">
+                <div
+                  className={classNames(
+                    statuses["online"],
+                    "flex-none rounded-full p-1"
+                  )}
+                >
+                  <div className="h-2 w-2 rounded-full bg-current" />
+                </div>
+                <h2 className="min-w-0 text-sm font-semibold leading-6 text-white">
+                  <a href={"#"} className="flex gap-x-2">
+                    <span className="truncate">{cur.name}</span>
+                    <span className="text-gray-400">/</span>
+                    <span className="whitespace-nowrap"></span>
+                    <span className="absolute inset-0" />
+                  </a>
+                </h2>
+              </div>
+              <div className="mt-3 flex items-center gap-x-2.5 text-xs leading-5 text-gray-400">
+                <p className="truncate">{cur.specialRule}</p>
+                {/* <svg
+           viewBox="0 0 2 2"
+           className="h-0.5 w-0.5 flex-none fill-gray-300"
+         >
+           <circle cx={1} cy={1} r={1} />
+         </svg> */}
+                {/* <p className="whitespace-nowrap">
+           {deployment.statusText}
+         </p> */}
+              </div>
+            </div>
+            {cur.forbidRule.map((curcur: any) => (
+              <div
+                key={0}
+                className={classNames(
+                  environments[
+                    curcur[curcur.length - 1] === "X" ? "Baggage" : "Carry"
+                  ],
+                  "rounded-full flex-none py-1 px-2 text-xs font-medium ring-1 ring-inset"
+                )}
+              >
+                {curcur}
+              </div>
+            ))}
+            <ChevronRightIcon
+              className="h-5 w-5 flex-none text-gray-400"
+              aria-hidden="true"
+            />
+          </li>
+        ))}
+      </ul>
     );
   }
 
@@ -277,7 +330,7 @@ export default function CheckHome() {
                               src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                               alt=""
                             />
-                            <span className="sr-only">Your profile</span>
+                            <span className="sr-only">프로필</span>
                             <span aria-hidden="true">임준현</span>
                           </a>
                         </li>
@@ -361,7 +414,7 @@ export default function CheckHome() {
                       src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                       alt=""
                     />
-                    <span className="sr-only">Your profile</span>
+                    <span className="sr-only">프로필</span>
                     <span aria-hidden="true">임준현</span>
                   </a>
                 </li>
@@ -413,10 +466,11 @@ export default function CheckHome() {
                     // name="search"
                   />
                   <CameraIcon
-                    onClick={() => {
-                      setSearchKeyword("");
-                      startCamera();
-                      setCameraOpened(true);
+                    onClick={async () => {
+                      await setSearchKeyword("");
+                      await setCameraOpened(true);
+                      await startCamera();
+                      await startCamera();
                     }}
                     className="cursor-pointer absolute inset-y-0 right-10 h-full w-5 text-gray-500"
                     // pointer-events-none
@@ -437,83 +491,116 @@ export default function CheckHome() {
 
           <main className="lg:pr-96">
             {isCameraOpened === true && searchKeyword === "" ? (
-              <CameraSection />
+              isCameraStarted === true ? (
+                <div
+                  className="bg-black relative"
+                  style={{ height: "calc(100vh - 4rem)" }}
+                >
+                  <div className="flex h-full items-center justify-center">
+                    <video
+                      className="w-full max-h-full object-contain"
+                      ref={videoRef}
+                      autoPlay
+                    />
+                  </div>
+
+                  <button
+                    className="cursor-pointer absolute bottom-16 w-24 h-24 bg-white rounded-full mx-auto border-double border-2 border-gray-300 left-1/2 transform -translate-x-1/2"
+                    onClick={handleButtonClick}
+                  >
+                    <CameraIcon
+                      className="cursor-pointer w-10 m-auto text-gray-400"
+                      // pointer-events-none
+                      aria-hidden="true"
+                    />
+                  </button>
+                </div>
+              ) : (
+                <CameraSection />
+              )
             ) : (
-              <div className="hidden lg:block">
-                <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-                  <h1 className="text-base font-semibold leading-7 text-white">
-                    반입 물품 확인
-                  </h1>
+              <div>
+                <div
+                  className={`${searchKeyword === "" ? "lg:block hidden" : ""}`}
+                >
+                  <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+                    <h1 className="text-base font-semibold leading-7 text-white">
+                      반입 물품 확인
+                    </h1>
 
-                  <Menu as="div" className="relative">
-                    <Menu.Button className="flex items-center gap-x-1 text-sm font-medium leading-6 text-white">
-                      정렬 기준
-                      <ChevronUpDownIcon
-                        className="h-5 w-5 text-gray-500"
-                        aria-hidden="true"
-                      />
-                    </Menu.Button>
-                    <Transition
-                      as={Fragment}
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
-                      <Menu.Items className="absolute right-0 z-10 mt-2.5 w-40 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active ? "bg-gray-50" : "",
-                                "block px-3 py-1 text-sm leading-6 text-gray-900"
-                              )}
-                            >
-                              이름
-                            </a>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active ? "bg-gray-50" : "",
-                                "block px-3 py-1 text-sm leading-6 text-gray-900"
-                              )}
-                            >
-                              날짜순
-                            </a>
-                          )}
-                        </Menu.Item>
-                        <Menu.Item>
-                          {({ active }) => (
-                            <a
-                              href="#"
-                              className={classNames(
-                                active ? "bg-gray-50" : "",
-                                "block px-3 py-1 text-sm leading-6 text-gray-900"
-                              )}
-                            >
-                              위험도
-                            </a>
-                          )}
-                        </Menu.Item>
-                      </Menu.Items>
-                    </Transition>
-                  </Menu>
-                </header>
-
+                    <Menu as="div" className="relative">
+                      <Menu.Button className="flex items-center gap-x-1 text-sm font-medium leading-6 text-white">
+                        정렬 기준
+                        <ChevronUpDownIcon
+                          className="h-5 w-5 text-gray-500"
+                          aria-hidden="true"
+                        />
+                      </Menu.Button>
+                      <Transition
+                        as={Fragment}
+                        enter="transition ease-out duration-100"
+                        enterFrom="transform opacity-0 scale-95"
+                        enterTo="transform opacity-100 scale-100"
+                        leave="transition ease-in duration-75"
+                        leaveFrom="transform opacity-100 scale-100"
+                        leaveTo="transform opacity-0 scale-95"
+                      >
+                        <Menu.Items className="absolute right-0 z-10 mt-2.5 w-40 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                          <Menu.Item>
+                            {({ active }) => (
+                              <a
+                                href="#"
+                                className={classNames(
+                                  active ? "bg-gray-50" : "",
+                                  "block px-3 py-1 text-sm leading-6 text-gray-900"
+                                )}
+                              >
+                                이름
+                              </a>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <a
+                                href="#"
+                                className={classNames(
+                                  active ? "bg-gray-50" : "",
+                                  "block px-3 py-1 text-sm leading-6 text-gray-900"
+                                )}
+                              >
+                                날짜순
+                              </a>
+                            )}
+                          </Menu.Item>
+                          <Menu.Item>
+                            {({ active }) => (
+                              <a
+                                href="#"
+                                className={classNames(
+                                  active ? "bg-gray-50" : "",
+                                  "block px-3 py-1 text-sm leading-6 text-gray-900"
+                                )}
+                              >
+                                위험도
+                              </a>
+                            )}
+                          </Menu.Item>
+                        </Menu.Items>
+                      </Transition>
+                    </Menu>
+                  </header>
+                </div>
                 <ForbidList />
               </div>
             )}
           </main>
 
           {/* Activity feed */}
-          <aside className="bg-black/10 lg:fixed lg:bottom-0 lg:right-0 lg:top-16 lg:w-96 lg:overflow-y-auto lg:border-l lg:border-white/5">
+          <aside
+            className={`${
+              searchKeyword === "" ? "" : "lg:block hidden"
+            } bg-black/10 lg:fixed lg:bottom-0 lg:right-0 lg:top-16 lg:w-96 lg:overflow-y-auto lg:border-l lg:border-white/5`}
+          >
             <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
               <h2 className="text-base font-semibold leading-7 text-white">
                 검색 랭킹

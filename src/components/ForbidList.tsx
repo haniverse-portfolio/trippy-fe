@@ -54,7 +54,11 @@ export function ForbidList() {
   });
   // refreshInterval: 1000,
   if (searchKeyword === "")
-    return <div className="text-white">반입 물품을 입력해주세요.</div>;
+    return (
+      <div className="text-white hidden lg:block">
+        반입 물품을 입력해주세요.
+      </div>
+    );
 
   if (error) {
     console.error("Fetch error:", error);

@@ -58,3 +58,15 @@ export const useCapturedImage = () => {
     setData: mutate,
   };
 };
+
+export const useCameraStarted = () => {
+  const { data, mutate } = useSWRImmutable<boolean>("cameraStarted", {
+    fallbackData: false,
+    revalidateOnReconnect: false,
+  });
+
+  return {
+    data: data,
+    setData: mutate,
+  };
+};
