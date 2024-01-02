@@ -327,7 +327,7 @@ export default function CheckHome() {
                           >
                             <img
                               className="h-8 w-8 rounded-full bg-gray-800"
-                              src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                              src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
                               alt=""
                             />
                             <span className="sr-only">프로필</span>
@@ -348,11 +348,30 @@ export default function CheckHome() {
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 ring-1 ring-white/5">
             <div className="flex h-16 shrink-0 items-center">
-              <img
-                className="h-8 w-auto"
-                src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                alt="Your Company"
-              />
+              <svg
+                className="h-8"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 47 40"
+                fill="none"
+              >
+                <path
+                  fill="#FB923C"
+                  d="M23.5 6.5C17.5 6.5 13.75 9.5 12.25 15.5C14.5 12.5 17.125 11.375 20.125 12.125C21.8367 12.5529 23.0601 13.7947 24.4142 15.1692C26.6202 17.4084 29.1734 20 34.75 20C40.75 20 44.5 17 46 11C43.75 14 41.125 15.125 38.125 14.375C36.4133 13.9471 35.1899 12.7053 33.8357 11.3308C31.6297 9.09158 29.0766 6.5 23.5 6.5ZM12.25 20C6.25 20 2.5 23 1 29C3.25 26 5.875 24.875 8.875 25.625C10.5867 26.0529 11.8101 27.2947 13.1642 28.6693C15.3702 30.9084 17.9234 33.5 23.5 33.5C29.5 33.5 33.25 30.5 34.75 24.5C32.5 27.5 29.875 28.625 26.875 27.875C25.1633 27.4471 23.9399 26.2053 22.5858 24.8307C20.3798 22.5916 17.8266 20 12.25 20Z"
+                />
+                <defs>
+                  <linearGradient
+                    id="%%GRADIENT_ID%%"
+                    x1="33.999"
+                    x2="1"
+                    y1="16.181"
+                    y2="16.181"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stop-color="%%GRADIENT_TO%%" />
+                    <stop offset="1" stop-color="%%GRADIENT_FROM%%" />
+                  </linearGradient>
+                </defs>
+              </svg>
             </div>
             <nav className="flex flex-1 flex-col">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -411,7 +430,7 @@ export default function CheckHome() {
                   >
                     <img
                       className="h-8 w-8 rounded-full bg-gray-800"
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                      src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
                       alt=""
                     />
                     <span className="sr-only">프로필</span>
@@ -604,7 +623,7 @@ export default function CheckHome() {
               </h2>
               <a
                 href="#"
-                className="text-sm font-semibold leading-6 text-indigo-400"
+                className="text-sm font-semibold leading-6 text-orange-400"
               >
                 모두 보기
               </a>
