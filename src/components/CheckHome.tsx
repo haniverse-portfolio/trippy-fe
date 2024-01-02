@@ -501,6 +501,7 @@ export default function CheckHome() {
                       className="w-full max-h-full object-contain"
                       ref={videoRef}
                       autoPlay
+                      playsInline
                     />
                   </div>
 
