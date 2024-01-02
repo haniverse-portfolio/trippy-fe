@@ -506,7 +506,7 @@ export default function CheckHome() {
                   </div>
 
                   <button
-                    className="cursor-pointer absolute bottom-16 w-24 h-24 bg-white rounded-full mx-auto border-double border-2 border-gray-300 left-1/2 transform -translate-x-1/2"
+                    className="cursor-pointer absolute bottom-20 w-24 h-24 bg-white rounded-full mx-auto border-double border-2 border-gray-300 left-1/2 transform -translate-x-1/2"
                     onClick={handleButtonClick}
                   >
                     <CameraIcon
@@ -597,11 +597,7 @@ export default function CheckHome() {
           </main>
 
           {/* Activity feed */}
-          <aside
-            className={`${
-              searchKeyword === "" ? "" : "lg:block hidden"
-            } bg-black/10 lg:fixed lg:bottom-0 lg:right-0 lg:top-16 lg:w-96 lg:overflow-y-auto lg:border-l lg:border-white/5`}
-          >
+          <aside className="md:block hidden bg-black/10 lg:fixed lg:bottom-0 lg:right-0 lg:top-16 lg:w-96 lg:overflow-y-auto lg:border-l lg:border-white/5">
             <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
               <h2 className="text-base font-semibold leading-7 text-white">
                 검색 랭킹
