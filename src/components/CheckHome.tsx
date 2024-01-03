@@ -279,7 +279,7 @@ export default function CheckHome() {
                               alt=""
                             />
                             <span className="sr-only">프로필</span>
-                            <span aria-hidden="true">임준현</span>
+                            <span aria-hidden="true">트레버</span>
                           </a>
                         </li>
                       </ul>
@@ -382,7 +382,7 @@ export default function CheckHome() {
                       alt=""
                     />
                     <span className="sr-only">프로필</span>
-                    <span aria-hidden="true">임준현</span>
+                    <span aria-hidden="true">트레버</span>
                   </a>
                 </li>
               </ul>
