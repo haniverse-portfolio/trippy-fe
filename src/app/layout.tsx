@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TRIPPY 트리피",
+  title: "트리피 - TRIPPY",
   description: "항공 반입 물품 확인은? 트리피",
 };
 

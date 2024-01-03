@@ -81,6 +81,20 @@ export default function ItemDrawer() {
                         <div>
                           <div className="relative h-40 sm:h-56 overflow-x-auto flex flex-row bg-white">
                             {Array.isArray((currentItem as any).exampleImg) &&
+                            (currentItem as any).exampleImg.length === 0 ? (
+                              <div className="flex items-center justify-center w-full h-full bg-gray-300 sm:w-96 dark:bg-gray-700">
+                                <svg
+                                  className="w-10 h-10 text-gray-200 dark:text-gray-600"
+                                  aria-hidden="true"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 18"
+                                >
+                                  <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+                                </svg>
+                              </div>
+                            ) : (
+                              Array.isArray((currentItem as any).exampleImg) &&
                               (currentItem as any).exampleImg.map(
                                 (imgUrl: string, index: number) => (
                                   <img
@@ -90,7 +104,8 @@ export default function ItemDrawer() {
                                     alt={`이미지 ${index + 1}`}
                                   />
                                 )
-                              )}
+                              )
+                            )}
                           </div>
 
                           <div className="mt-6 px-4 sm:mt-8 sm:flex sm:items-end sm:px-6">
@@ -179,6 +194,35 @@ export default function ItemDrawer() {
                               </p>
                             </dd>
                           </div>
+                          {/* <div>
+                            <dt className="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
+                              고지
+                            </dt>
+                            <dd className="mt-1 text-sm text-gray-400 sm:col-span-2">
+                              <p>
+                                상기 별표에서 정하지 아니한 물품 또는 반입을
+                                허용하는 물품이더라도 해당 공항의 보안검색감독자
+                                또는 항공운송사업자가 항공기 안전 및
+                                승객·승무원에게 위해(危害)를 줄 수 있다고
+                                판단하는 경우에는 항공기 내 반입이 금지될 수
+                                있습니다. 항공운송사업자는 승객의 휴대 또는
+                                위탁수하물 중 「항공위험물
+                                운송기술기준」(국토교통부 고시) 제210조에서 정한
+                                위험물에 대해서는 동 고시 별표24에 따라
+                                반입·운송하여야 합니다. 또한, 공항운영자는
+                                검색과정에서 위험물이 발견된 경우 위 고시에 따라
+                                처리될 수 있도록 협조하여야 합니다. 항공기 내로
+                                반입코자 하는 물질이 화학성·유독성 물질인
+                                경우에는 승객이 ?산업안전보건법?에 따른
+                                물질안전보건자료를 해당 항공운송사업자에게
+                                제시하고 안전한 물질로 판단되는 경우에 한해
+                                위탁수하물로 반입이 가능합니다. 본 자료는 기내
+                                반입금지 물품에 대한 참고 정보이며, 자세한
+                                내용은 해당 공항이나 항공사에 문의하시기
+                                바랍니다.
+                              </p>
+                            </dd>
+                          </div> */}
                         </dl>
                       </div>
                     </div>
