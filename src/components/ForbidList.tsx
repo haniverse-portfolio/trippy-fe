@@ -18,8 +18,10 @@ const statuses: { [key: string]: string } = {
 
 // 환경별 스타일
 const environments: { [key: string]: string } = {
-  Carry: "text-green-400 bg-green-400/10 ring-gray-400/20",
-  Baggage: "text-rose-400 bg-rose-400/10 ring-rose-400/30",
+  Yes: "text-green-400 bg-green-400/10 ring-gray-400/20",
+  No: "text-rose-400 bg-rose-400/10 ring-rose-400/30",
+  Special: "text-violet-400 bg-violet-400/10 ring-violet-400/30",
+  Approve: "text-orange-400 bg-orange-400/10 ring-orange-400/30",
 };
 
 const fetcher = (url: string) =>
@@ -33,7 +35,14 @@ const fetcher = (url: string) =>
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
+function filterRules(rules: string[]): string[] {
+  const priorityRules = rules.filter(
+    (rule) => rule.includes("O") || rule.includes("X")
+  );
+  const otherRules = rules.filter((rule) => !priorityRules.includes(rule));
 
+  return [...priorityRules, ...otherRules].slice(0, 2);
+}
 export function ForbidList() {
   const { data: searchKeyword, setData: setSearchKeyword } = useSearchKeyword();
   const { data: currentItem, setData: setCurrentItem } = useCurrentItem();
@@ -169,19 +178,30 @@ export function ForbidList() {
               </div>
             </div>
 
-            {cur.forbidRule.map((rule: string, index: number) => (
-              <div
-                key={index}
-                className={classNames(
-                  environments[
-                    rule[rule.length - 1] === "X" ? "Baggage" : "Carry"
-                  ],
-                  "rounded-full flex-none py-1 px-2 text-xs font-medium ring-1 ring-inset"
-                )}
-              >
-                {rule}
-              </div>
-            ))}
+            {filterRules(cur.forbidRule).map((rule: string, index: number) => {
+              const lastChar = rule[rule.length - 1];
+              let classNameKey =
+                lastChar === "O"
+                  ? "Yes"
+                  : lastChar === "X"
+                  ? "No"
+                  : rule === "특별조항"
+                  ? "Special"
+                  : "Approve";
+
+              return (
+                <div
+                  key={index}
+                  className={classNames(
+                    environments[classNameKey],
+                    "rounded-full flex-none py-1 px-2 text-xs font-medium ring-1 ring-inset"
+                  )}
+                >
+                  {rule}
+                </div>
+              );
+            })}
+
             <ChevronRightIcon
               className="h-5 w-5 flex-none text-gray-400"
               aria-hidden="true"

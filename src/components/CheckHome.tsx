@@ -24,15 +24,6 @@ import {
 import ItemDrawer from "./ItemDrawer";
 import { LoaderList } from "./LoaderList";
 
-const statuses: { [key: string]: string } = {
-  offline: "text-gray-500 bg-gray-100/10",
-  online: "text-green-400 bg-green-400/10",
-  error: "text-rose-400 bg-rose-400/10",
-};
-const environments: { [key: string]: string } = {
-  Carry: "text-green-400 bg-green-400/10 ring-gray-400/20",
-  Baggage: "text-rose-400 bg-rose-400/10 ring-rose-400/30",
-};
 const navigation = [
   // { name: "Projects", href: "#", icon: FolderIcon, current: false },
   { name: "물품 확인", href: "#", icon: ServerIcon, current: true },
@@ -140,14 +131,82 @@ export default function CheckHome() {
 
     if (error) {
       console.error("Fetch error:", error);
-      return <div className="text-white">카메라 에러</div>;
+      return (
+        <div
+          style={{ height: "calc(100vh - 9rem)" }}
+          className="text-center text-gray-300 flex flex-col items-center justify-center gap-y-4"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
+            />
+          </svg>
+
+          <p className="text-gray-300 text-center">
+            잘못된 결과를 받았습니다. 다시 시도해주세요.
+          </p>
+        </div>
+      );
     }
     if (!data) {
-      return;
-      <LoaderList />;
+      return (
+        <div
+          style={{ height: "calc(100vh - 9rem)" }}
+          className="text-center text-gray-300 flex flex-col items-center justify-center gap-y-4"
+        >
+          <div
+            role="status"
+            className="space-y-8 animate-pulse md:space-y-0 md:space-x-8 rtl:space-x-reverse md:flex md:items-center"
+          >
+            <div className="flex items-center justify-center w-full h-48 bg-gray-300 rounded sm:w-96 dark:bg-gray-700">
+              <svg
+                className="w-10 h-10 text-gray-200 dark:text-gray-600"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="currentColor"
+                viewBox="0 0 20 18"
+              >
+                <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-gray-300 text-center">이미지 인식 중...</p>
+        </div>
+      );
     }
     if (data.length === 0) {
-      return <div className="text-white">검색 결과가 없습니다.</div>;
+      return (
+        <div
+          style={{ height: "calc(100vh - 9rem)" }}
+          className="text-center text-gray-300 flex flex-col items-center justify-center gap-y-4"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
+            />
+          </svg>
+
+          <p className="text-gray-300 text-center">검색 결과가 없습니다.</p>
+        </div>
+      );
     }
     // conf : 배열
     setSearchKeyword(data.class_name[0]);
@@ -214,11 +273,30 @@ export default function CheckHome() {
 
                   <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 ring-1 ring-white/10">
                     <div className="flex h-16 shrink-0 items-center">
-                      <img
-                        className="h-8 w-auto"
-                        src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
-                        alt="Your Company"
-                      />
+                      <svg
+                        className="h-8"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 47 40"
+                        fill="none"
+                      >
+                        <path
+                          fill="#FB923C"
+                          d="M23.5 6.5C17.5 6.5 13.75 9.5 12.25 15.5C14.5 12.5 17.125 11.375 20.125 12.125C21.8367 12.5529 23.0601 13.7947 24.4142 15.1692C26.6202 17.4084 29.1734 20 34.75 20C40.75 20 44.5 17 46 11C43.75 14 41.125 15.125 38.125 14.375C36.4133 13.9471 35.1899 12.7053 33.8357 11.3308C31.6297 9.09158 29.0766 6.5 23.5 6.5ZM12.25 20C6.25 20 2.5 23 1 29C3.25 26 5.875 24.875 8.875 25.625C10.5867 26.0529 11.8101 27.2947 13.1642 28.6693C15.3702 30.9084 17.9234 33.5 23.5 33.5C29.5 33.5 33.25 30.5 34.75 24.5C32.5 27.5 29.875 28.625 26.875 27.875C25.1633 27.4471 23.9399 26.2053 22.5858 24.8307C20.3798 22.5916 17.8266 20 12.25 20Z"
+                        />
+                        <defs>
+                          <linearGradient
+                            id="%%GRADIENT_ID%%"
+                            x1="33.999"
+                            x2="1"
+                            y1="16.181"
+                            y2="16.181"
+                            gradientUnits="userSpaceOnUse"
+                          >
+                            <stop stop-color="%%GRADIENT_TO%%" />
+                            <stop offset="1" stop-color="%%GRADIENT_FROM%%" />
+                          </linearGradient>
+                        </defs>
+                      </svg>
                     </div>
                     <nav className="flex flex-1 flex-col">
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -424,6 +502,7 @@ export default function CheckHome() {
                     onChange={(e) => {
                       if (e.currentTarget.value !== "") setCameraOpened(false);
                       setSearchKeyword(e.currentTarget.value);
+                      setSidebarOpen(false);
                     }}
                     // onKeyUp={(e) => {
                     //   if (e.key === "Enter") {
@@ -438,17 +517,35 @@ export default function CheckHome() {
                     // type="search"
                     // name="search"
                   />
-                  <CameraIcon
-                    onClick={async () => {
-                      await setSearchKeyword("");
-                      await setCameraOpened(true);
-                      await startCamera();
-                      await startCamera();
-                    }}
-                    className="cursor-pointer absolute inset-y-0 right-10 h-full w-5 text-gray-500"
-                    // pointer-events-none
-                    aria-hidden="true"
-                  />
+                  {isCameraOpened === false ? (
+                    <CameraIcon
+                      onClick={async () => {
+                        await setSearchKeyword("");
+                        await setCameraOpened(true);
+                        await startCamera();
+                        await startCamera();
+                      }}
+                      className="cursor-pointer absolute inset-y-0 right-10 h-full w-5 text-gray-500"
+                      // pointer-events-none
+                      aria-hidden="true"
+                    />
+                  ) : (
+                    <XMarkIcon
+                      onClick={async () => {
+                        await setSearchKeyword("");
+                        await setCameraOpened(false);
+                        await setIsCameraStarted(false);
+                        await setSidebarOpen(false);
+                        if (mediaStream !== null && mediaStream !== undefined)
+                          mediaStream
+                            .getTracks()
+                            .forEach((track) => track.stop());
+                      }}
+                      className="cursor-pointer absolute inset-y-0 right-10 h-full w-5 text-gray-500"
+                      // pointer-events-none
+                      aria-hidden="true"
+                    />
+                  )}
                   <PhotoIcon
                     onClick={async () => {
                       await setSearchKeyword("");

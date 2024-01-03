@@ -10,7 +10,20 @@ import { useCurrentItem, useItemSidebarOpened } from "@/hooks/states";
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
 }
+const environments: { [key: string]: string } = {
+  Yes: "text-green-400 bg-green-400/10 ring-gray-400/20",
+  No: "text-rose-400 bg-rose-400/10 ring-rose-400/30",
+  Special: "text-violet-400 bg-violet-400/10 ring-violet-400/30",
+  Approve: "text-orange-400 bg-orange-400/10 ring-orange-400/30",
+};
+function filterRules(rules: string[]): string[] {
+  const priorityRules = rules.filter(
+    (rule) => rule.includes("O") || rule.includes("X")
+  );
+  const otherRules = rules.filter((rule) => !priorityRules.includes(rule));
 
+  return [...priorityRules, ...otherRules].slice(0, 2);
+}
 export default function ItemDrawer() {
   const { data: itemSidebarOpened, setData: setItemSidebarOpened } =
     useItemSidebarOpened();
@@ -105,67 +118,6 @@ export default function ItemDrawer() {
                                 >
                                   공유하기
                                 </button>
-                                <div className="ml-3 inline-flex sm:ml-0">
-                                  <Menu
-                                    as="div"
-                                    className="relative inline-block text-left"
-                                  >
-                                    <Menu.Button className="relative inline-flex items-center rounded-md bg-white p-2 text-gray-400 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                                      <span className="absolute -inset-1" />
-                                      <span className="sr-only">
-                                        Open options menu
-                                      </span>
-                                      <EllipsisVerticalIcon
-                                        className="h-5 w-5"
-                                        aria-hidden="true"
-                                      />
-                                    </Menu.Button>
-                                    <Transition
-                                      as={Fragment}
-                                      enter="transition ease-out duration-100"
-                                      enterFrom="transform opacity-0 scale-95"
-                                      enterTo="transform opacity-100 scale-100"
-                                      leave="transition ease-in duration-75"
-                                      leaveFrom="transform opacity-100 scale-100"
-                                      leaveTo="transform opacity-0 scale-95"
-                                    >
-                                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                        <div className="py-1">
-                                          <Menu.Item>
-                                            {({ active }) => (
-                                              <a
-                                                href="#"
-                                                className={classNames(
-                                                  active
-                                                    ? "bg-gray-100 text-gray-900"
-                                                    : "text-gray-700",
-                                                  "block px-4 py-2 text-sm"
-                                                )}
-                                              >
-                                                원본 확인하기
-                                              </a>
-                                            )}
-                                          </Menu.Item>
-                                          <Menu.Item>
-                                            {({ active }) => (
-                                              <a
-                                                href="#"
-                                                className={classNames(
-                                                  active
-                                                    ? "bg-gray-100 text-gray-900"
-                                                    : "text-gray-700",
-                                                  "block px-4 py-2 text-sm"
-                                                )}
-                                              >
-                                                공유하기
-                                              </a>
-                                            )}
-                                          </Menu.Item>
-                                        </div>
-                                      </Menu.Items>
-                                    </Transition>
-                                  </Menu>
-                                </div>
                               </div>
                             </div>
                           </div>
@@ -174,27 +126,57 @@ export default function ItemDrawer() {
                       <div className="px-4 pb-5 pt-5 sm:px-0 sm:pt-0">
                         <dl className="space-y-8 px-4 sm:space-y-6 sm:px-6">
                           <div>
-                            <dt className="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
-                              기내 휴대
+                            <dt
+                              onClick={() => {
+                                console.log((currentItem as any)?.forbidRule);
+                              }}
+                              className="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0"
+                            >
+                              금지 규칙
                             </dt>
-                            <dd className="mt-1 text-sm text-gray-400 sm:col-span-2">
-                              {(currentItem as any)?.forbidRule ?? ""}
+                            <dd className="text-sm sm:col-span-2 text-left">
+                              <li className="relative flex items-center space-x-4 py-2 justify-start">
+                                {Array.isArray(
+                                  (currentItem as any)?.forbidRule
+                                ) &&
+                                  filterRules(
+                                    (currentItem as any)?.forbidRule
+                                  ).map((rule: string, index: number) => {
+                                    const lastChar = rule[rule.length - 1];
+                                    let classNameKey =
+                                      lastChar === "O"
+                                        ? "Yes"
+                                        : lastChar === "X"
+                                        ? "No"
+                                        : rule === "특별조항"
+                                        ? "Special"
+                                        : "Approve";
+
+                                    return (
+                                      <div
+                                        key={index}
+                                        className={classNames(
+                                          environments[classNameKey],
+                                          "rounded-full flex-none py-1 px-2 text-xs font-medium ring-1 ring-inset"
+                                        )}
+                                      >
+                                        {rule}
+                                      </div>
+                                    );
+                                  })}
+                              </li>
                             </dd>
                           </div>
                           <div>
                             <dt className="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
-                              위탁 수하물
+                              특수 규칙
                             </dt>
                             <dd className="mt-1 text-sm text-gray-400 sm:col-span-2">
-                              {(currentItem as any)?.forbidRule ?? ""}
-                            </dd>
-                          </div>
-                          <div>
-                            <dt className="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
-                              특수 조항
-                            </dt>
-                            <dd className="mt-1 text-sm text-gray-400 sm:col-span-2">
-                              <p>{(currentItem as any)?.specialRule ?? ""}</p>
+                              <p>
+                                {(currentItem as any)?.specialRule === ""
+                                  ? "없음"
+                                  : (currentItem as any)?.specialRule ?? "없음"}
+                              </p>
                             </dd>
                           </div>
                         </dl>
