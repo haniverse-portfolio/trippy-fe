@@ -5,11 +5,11 @@ function listExample() {
     <li className="animate-pulse relative flex items-center space-x-4 px-4 py-4 sm:px-6 lg:px-8">
       <div className="min-w-0 flex-auto">
         <div className="flex items-center gap-x-3">
-          <div className="bg-gray-300 flex-none rounded-full p-1"></div>
+          <div className="bg-gray-400 flex-none rounded-full p-1"></div>
           <div className=" flex flex-auto min-w-0">
-            <h2 className=" min-w-0 text-sm font-semibold leading-6 text-gray-300 flex-auto overflow-hidden">
+            <h2 className=" min-w-0 text-sm font-semibold leading-6 text-gray-400 flex-auto overflow-hidden">
               <a href={"#"} className=" flex gap-x-2 items-center">
-                <span className="rounded-full bg-gray-300 truncate">
+                <span className="rounded-full bg-gray-400 truncate">
                   휴대용 라이터
                 </span>
               </a>
@@ -17,14 +17,14 @@ function listExample() {
           </div>
         </div>
       </div>
-      <div className="bg-gray-300 text-gray-300 rounded-full flex-none py-1 px-2 text-xs font-medium">
+      <div className="bg-gray-400 text-gray-400 rounded-full flex-none py-1 px-2 text-xs font-medium">
         기내휴대 X
       </div>
-      <div className="bg-gray-300 text-gray-300 rounded-full flex-none py-1 px-2 text-xs font-medium">
+      <div className="bg-gray-400 text-gray-400 rounded-full flex-none py-1 px-2 text-xs font-medium">
         위탁수하물 X
       </div>
       <ChevronRightIcon
-        className="h-5 w-5 flex-none text-gray-300 "
+        className="h-5 w-5 flex-none text-gray-400 "
         aria-hidden="true"
       />
     </li>

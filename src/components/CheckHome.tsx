@@ -6,6 +6,8 @@ import {
   CameraIcon,
   ChevronRightIcon,
   ChevronUpDownIcon,
+  MagnifyingGlassCircleIcon,
+  MagnifyingGlassIcon,
   PhotoIcon,
 } from "@heroicons/react/20/solid";
 import { activityItems, teams, uploadURL } from "@/constants/const";
@@ -413,6 +415,10 @@ export default function CheckHome() {
                     aria-hidden="true"
                   /> */}
                   <input type="text" className="hidden" />
+                  <MagnifyingGlassIcon
+                    className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-500"
+                    aria-hidden="true"
+                  />
                   <input
                     value={searchKeyword}
                     onChange={(e) => {
@@ -427,7 +433,7 @@ export default function CheckHome() {
                     // }}
                     autoComplete="off"
                     id="search-field"
-                    className="block h-full w-full border-0 bg-transparent py-0 pr-0 text-white focus:ring-0 sm:text-sm"
+                    className="block h-full w-full border-0 bg-transparent py-0 pl-8 pr-0 text-white focus:ring-0 sm:text-sm"
                     placeholder="반입 물품을 확인해보세요"
                     // type="search"
                     // name="search"
@@ -491,9 +497,8 @@ export default function CheckHome() {
               )
             ) : (
               <div>
-                <div
-                  className={`${searchKeyword === "" ? "lg:block hidden" : ""}`}
-                >
+                <div className={`${searchKeyword === "" ? "" : ""}`}>
+                  {/* lg:block hidden */}
                   <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
                     <h1 className="text-base font-semibold leading-7 text-white">
                       반입 물품 확인
@@ -583,7 +588,7 @@ export default function CheckHome() {
               {activityItems.map((item) => (
                 <li
                   key={item.commit}
-                  className="cursur-pointer px-4 py-4 sm:px-6 lg:px-8"
+                  className="cursor-pointer hover:bg-gray-800 px-4 py-4 sm:px-6 lg:px-8"
                   onClick={() => {
                     setSearchKeyword(item.user.name as any);
                     setCameraOpened(false);
