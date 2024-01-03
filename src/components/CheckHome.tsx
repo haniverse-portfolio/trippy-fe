@@ -19,6 +19,7 @@ import {
   useMediaStream,
   useSearchKeyword,
 } from "@/hooks/states";
+import ItemDrawer from "./ItemDrawer";
 
 const statuses: { [key: string]: string } = {
   offline: "text-gray-500 bg-gray-100/10",
@@ -141,7 +142,9 @@ export default function CheckHome() {
     if (!data) {
       return <div className="text-white">AI 서버 분석 중</div>;
     }
-    console.log(data);
+    if (data.length === 0) {
+      return <div className="text-white">검색 결과가 없습니다.</div>;
+    }
     return (
       <ul role="list" className="divide-y divide-white/5">
         {data.map((cur: any) => (
@@ -206,7 +209,7 @@ export default function CheckHome() {
 
   return (
     <html className="h-full bg-gray-900">
-      {/* <CameraDrawer /> */}
+      <ItemDrawer />
       <body className="h-full">
         <Transition.Root show={sidebarOpen} as={Fragment}>
           <Dialog
@@ -496,8 +499,11 @@ export default function CheckHome() {
                     aria-hidden="true"
                   />
                   <PhotoIcon
-                    onClick={() => {
-                      alert("사진 불러오기");
+                    onClick={async () => {
+                      await setSearchKeyword("");
+                      await setCameraOpened(true);
+                      await startCamera();
+                      await startCamera();
                     }}
                     className="cursor-pointer absolute inset-y-0 right-0 h-full w-5 text-gray-500"
                     // pointer-events-none

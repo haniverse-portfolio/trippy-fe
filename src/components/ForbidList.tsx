@@ -1,6 +1,10 @@
 import React from "react";
 import useSWR from "swr";
-import { useSearchKeyword } from "@/hooks/states";
+import {
+  useCurrentItem,
+  useItemSidebarOpened,
+  useSearchKeyword,
+} from "@/hooks/states";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { avecURL } from "@/constants/const";
 
@@ -31,11 +35,14 @@ function classNames(...classes: any) {
 
 export function ForbidList() {
   const { data: searchKeyword, setData: setSearchKeyword } = useSearchKeyword();
+  const { data: currentItem, setData: setCurrentItem } = useCurrentItem();
   const { data, error } = useSWR(avecURL + searchKeyword, fetcher, {
     revalidateIfStale: false,
     revalidateOnFocus: true,
     revalidateOnReconnect: true,
   });
+  const { data: itemSidebarOpened, setData: setItemSidebarOpened } =
+    useItemSidebarOpened();
 
   if (searchKeyword === "")
     return (
@@ -47,7 +54,9 @@ export function ForbidList() {
   if (error) return <div className="text-white">에러</div>;
 
   if (!data) return <div className="text-white">로딩 중</div>;
-
+  if (data.length === 0) {
+    return <div className="text-white">검색 결과가 없습니다.</div>;
+  }
   return (
     <ul role="list" className="divide-y divide-white/5">
       {data.map((cur: any) => {
@@ -67,6 +76,10 @@ export function ForbidList() {
 
         return (
           <li
+            onClick={() => {
+              setItemSidebarOpened(true);
+              setCurrentItem(cur);
+            }}
             key={cur.id}
             className="relative flex items-center space-x-4 px-4 py-4 sm:px-6 lg:px-8"
           >

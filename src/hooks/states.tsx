@@ -35,6 +35,31 @@ export const useCheckSidebarOpened = () => {
     setData: mutate,
   };
 };
+
+export const useItemSidebarOpened = () => {
+  const { data, mutate } = useSWRImmutable<boolean>("itemSidebarOpened", {
+    fallbackData: false,
+    revalidateOnReconnect: false,
+  });
+
+  return {
+    data: data,
+    setData: mutate,
+  };
+};
+
+export const useCurrentItem = () => {
+  const { data, mutate } = useSWRImmutable<Object>("currentItem", {
+    fallbackData: {},
+    revalidateOnReconnect: false,
+  });
+
+  return {
+    data: data,
+    setData: mutate,
+  };
+};
+
 export const useMediaStream = () => {
   const { data, mutate } = useSWRImmutable<MediaStream | null>("mediaStream", {
     fallbackData: null,
