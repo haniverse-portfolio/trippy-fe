@@ -7,6 +7,7 @@ import {
 } from "@/hooks/states";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { avecURL } from "@/constants/const";
+import { LoaderList } from "./LoaderList";
 
 // 상태별 스타일
 const statuses: { [key: string]: string } = {
@@ -53,7 +54,7 @@ export function ForbidList() {
 
   if (error) return <div className="text-white">에러</div>;
 
-  if (!data) return <div className="text-white">로딩 중</div>;
+  if (!data) return <LoaderList />;
   if (data.length === 0) {
     return <div className="text-white">검색 결과가 없습니다.</div>;
   }

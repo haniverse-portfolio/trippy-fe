@@ -20,6 +20,7 @@ import {
   useSearchKeyword,
 } from "@/hooks/states";
 import ItemDrawer from "./ItemDrawer";
+import { LoaderList } from "./LoaderList";
 
 const statuses: { [key: string]: string } = {
   offline: "text-gray-500 bg-gray-100/10",
@@ -140,7 +141,8 @@ export default function CheckHome() {
       return <div className="text-white">카메라 에러</div>;
     }
     if (!data) {
-      return <div className="text-white">AI 서버 분석 중</div>;
+      return;
+      <LoaderList />;
     }
     if (data.length === 0) {
       return <div className="text-white">검색 결과가 없습니다.</div>;
