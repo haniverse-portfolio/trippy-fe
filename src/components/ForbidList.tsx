@@ -57,7 +57,7 @@ export function ForbidList() {
   if (searchKeyword === "")
     return (
       <div
-        style={{ height: "calc(100vh - 9rem)" }}
+        style={{ height: "calc(100vh - 15rem)" }}
         className="text-center text-gray-300 flex flex-col items-center justify-center gap-y-4"
       >
         <svg
@@ -82,7 +82,7 @@ export function ForbidList() {
   if (error)
     return (
       <div
-        style={{ height: "calc(100vh - 9rem)" }}
+        style={{ height: "calc(100vh - 15rem)" }}
         className="text-center text-gray-300 flex flex-col items-center justify-center gap-y-4"
       >
         <svg
@@ -110,7 +110,7 @@ export function ForbidList() {
   if (data.length === 0) {
     return (
       <div
-        style={{ height: "calc(100vh - 9rem)" }}
+        style={{ height: "calc(100vh - 15rem)" }}
         className="text-center text-gray-300 flex flex-col items-center justify-center gap-y-4"
       >
         <svg
@@ -163,7 +163,7 @@ export function ForbidList() {
                 <div
                   className={classNames(
                     statuses[statusKey], // 동적 상태 적용
-                    "flex-none rounded-full p-1"
+                    "animate-pulse flex-none rounded-full p-1"
                   )}
                 >
                   <div className="h-2 w-2 rounded-full bg-current" />

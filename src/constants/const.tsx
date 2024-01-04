@@ -115,22 +115,128 @@ export const activityItems = [
   // More items...
 ];
 
+export const banItems = [
+  {
+    user: {
+      name: "액체·분무·겔류",
+      imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2310",
+    },
+    projectName: "ios-app",
+    commit: "2d89f0c8",
+    branch: "main",
+    date: "1위",
+    dateTime: "2023-01-23T11:00",
+  },
+  {
+    user: {
+      name: "인화성가스 및 액체",
+      imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2311",
+    },
+    projectName: "ios-app",
+    commit: "2d89f0c8",
+    branch: "main",
+    date: "2위",
+    dateTime: "2023-01-23T11:00",
+  },
+  {
+    user: {
+      name: "뾰족하거나 날카로운 물체",
+      imageUrl: "	https://www.avsec365.or.kr/etc/file/image.do?fileId=2312",
+    },
+    projectName: "ios-app",
+    commit: "2d89f0c8",
+    branch: "main",
+    date: "3위",
+    dateTime: "2023-01-23T11:00",
+  },
+  {
+    user: {
+      name: "공구류",
+      imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2313",
+    },
+    projectName: "ios-app",
+    commit: "2d89f0c8",
+    branch: "main",
+    date: "4위",
+    dateTime: "2023-01-23T11:00",
+  },
+  {
+    user: {
+      name: "전자충격기 및 퇴치스프레이",
+      imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2314",
+    },
+    projectName: "ios-app",
+    commit: "2d89f0c8",
+    branch: "main",
+    date: "5위",
+    dateTime: "2023-01-23T11:00",
+  },
+  {
+    user: {
+      name: "총기류 및 구성부품",
+      imageUrl: "	https://www.avsec365.or.kr/etc/file/image.do?fileId=2315",
+    },
+    projectName: "ios-app",
+    commit: "2d89f0c8",
+    branch: "main",
+    date: "6위",
+    dateTime: "2023-01-23T11:00",
+  },
+  {
+    user: {
+      name: "기폭장치류",
+      imageUrl: "	https://www.avsec365.or.kr/etc/file/image.do?fileId=2316",
+    },
+    projectName: "ios-app",
+    commit: "2d89f0c8",
+    branch: "main",
+    date: "7위",
+    dateTime: "2023-01-23T11:00",
+  },
+  {
+    user: {
+      name: "군사 폭발 용품",
+      imageUrl: "	https://www.avsec365.or.kr/etc/file/image.do?fileId=2317",
+    },
+    projectName: "ios-app",
+    commit: "2d89f0c8",
+    branch: "main",
+    date: "8위",
+    dateTime: "2023-01-23T11:00",
+  },
+  {
+    user: {
+      name: "폭죽, 조명탄",
+      imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2318",
+    },
+    projectName: "ios-app",
+    commit: "2d89f0c8",
+    branch: "main",
+    date: "9위",
+    dateTime: "2023-01-23T11:00",
+  },
+  {
+    user: {
+      name: "위험물질 및 독성물질",
+      imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2319",
+    },
+    projectName: "ios-app",
+    commit: "2d89f0c8",
+    branch: "main",
+    date: "10위",
+    dateTime: "2023-01-23T11:00",
+  },
+  // More items...
+];
+
 export const teams = [
   {
     id: 1,
-    name: "🇰🇷 KOR →  🇹🇭 THA",
+    name: "🇰🇷 KOR - 🛫 Departure",
     href: "#",
     initial: "1",
     current: false,
   },
-  {
-    id: 2,
-    name: "🇰🇷 KOR →  🇺🇸 USA",
-    href: "#",
-    initial: "2",
-    current: false,
-  },
-  { id: 3, name: "🇰🇷 KOR →  🇯🇵 JPN", href: "#", initial: "3", current: false },
 ];
 
 export const uploadURL =

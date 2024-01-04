@@ -95,3 +95,15 @@ export const useCameraStarted = () => {
     setData: mutate,
   };
 };
+
+export const useRankingFlag = () => {
+  const { data, mutate } = useSWRImmutable<boolean>("rankingFlag", {
+    fallbackData: false,
+    revalidateOnReconnect: false,
+  });
+
+  return {
+    data: data,
+    setData: mutate,
+  };
+};

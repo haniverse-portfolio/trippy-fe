@@ -4,13 +4,11 @@ import { ServerIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   Bars3Icon,
   CameraIcon,
-  ChevronRightIcon,
   ChevronUpDownIcon,
-  MagnifyingGlassCircleIcon,
   MagnifyingGlassIcon,
   PhotoIcon,
 } from "@heroicons/react/20/solid";
-import { activityItems, teams, uploadURL } from "@/constants/const";
+import { activityItems, banItems, teams, uploadURL } from "@/constants/const";
 import useSWR from "swr";
 import { ForbidList } from "./ForbidList";
 import {
@@ -19,10 +17,12 @@ import {
   useCapturedImage,
   useCheckSidebarOpened,
   useMediaStream,
+  useRankingFlag,
   useSearchKeyword,
 } from "@/hooks/states";
 import ItemDrawer from "./ItemDrawer";
 import { LoaderList } from "./LoaderList";
+import Link from "next/link";
 
 const navigation = [
   // { name: "Projects", href: "#", icon: FolderIcon, current: false },
@@ -47,6 +47,7 @@ export default function CheckHome() {
   const { data: capturedImage, setData: setCapturedImage } = useCapturedImage();
   const { data: isCameraStarted, setData: setIsCameraStarted } =
     useCameraStarted();
+  const { data: rankingFlag, setData: setRankingFlag } = useRankingFlag();
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -133,7 +134,7 @@ export default function CheckHome() {
       console.error("Fetch error:", error);
       return (
         <div
-          style={{ height: "calc(100vh - 9rem)" }}
+          style={{ height: "calc(100vh - 15rem)" }}
           className="text-center text-gray-300 flex flex-col items-center justify-center gap-y-4"
         >
           <svg
@@ -160,7 +161,7 @@ export default function CheckHome() {
     if (!data) {
       return (
         <div
-          style={{ height: "calc(100vh - 9rem)" }}
+          style={{ height: "calc(100vh - 15rem)" }}
           className="text-center text-gray-300 flex flex-col items-center justify-center gap-y-4"
         >
           <div
@@ -186,7 +187,7 @@ export default function CheckHome() {
     if (data.length === 0) {
       return (
         <div
-          style={{ height: "calc(100vh - 9rem)" }}
+          style={{ height: "calc(100vh - 15rem)" }}
           className="text-center text-gray-300 flex flex-col items-center justify-center gap-y-4"
         >
           <svg
@@ -272,32 +273,34 @@ export default function CheckHome() {
                   {/* Sidebar component, swap this element with another sidebar if you like */}
 
                   <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 ring-1 ring-white/10">
-                    <div className="flex h-16 shrink-0 items-center">
-                      <svg
-                        className="h-8"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 47 40"
-                        fill="none"
-                      >
-                        <path
-                          fill="#FB923C"
-                          d="M23.5 6.5C17.5 6.5 13.75 9.5 12.25 15.5C14.5 12.5 17.125 11.375 20.125 12.125C21.8367 12.5529 23.0601 13.7947 24.4142 15.1692C26.6202 17.4084 29.1734 20 34.75 20C40.75 20 44.5 17 46 11C43.75 14 41.125 15.125 38.125 14.375C36.4133 13.9471 35.1899 12.7053 33.8357 11.3308C31.6297 9.09158 29.0766 6.5 23.5 6.5ZM12.25 20C6.25 20 2.5 23 1 29C3.25 26 5.875 24.875 8.875 25.625C10.5867 26.0529 11.8101 27.2947 13.1642 28.6693C15.3702 30.9084 17.9234 33.5 23.5 33.5C29.5 33.5 33.25 30.5 34.75 24.5C32.5 27.5 29.875 28.625 26.875 27.875C25.1633 27.4471 23.9399 26.2053 22.5858 24.8307C20.3798 22.5916 17.8266 20 12.25 20Z"
-                        />
-                        <defs>
-                          <linearGradient
-                            id="%%GRADIENT_ID%%"
-                            x1="33.999"
-                            x2="1"
-                            y1="16.181"
-                            y2="16.181"
-                            gradientUnits="userSpaceOnUse"
-                          >
-                            <stop stop-color="%%GRADIENT_TO%%" />
-                            <stop offset="1" stop-color="%%GRADIENT_FROM%%" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                    </div>
+                    <Link href="/" className="cursor-pointer">
+                      <div className="flex h-16 shrink-0 items-center">
+                        <svg
+                          className="h-8"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 47 40"
+                          fill="none"
+                        >
+                          <path
+                            fill="#FB923C"
+                            d="M23.5 6.5C17.5 6.5 13.75 9.5 12.25 15.5C14.5 12.5 17.125 11.375 20.125 12.125C21.8367 12.5529 23.0601 13.7947 24.4142 15.1692C26.6202 17.4084 29.1734 20 34.75 20C40.75 20 44.5 17 46 11C43.75 14 41.125 15.125 38.125 14.375C36.4133 13.9471 35.1899 12.7053 33.8357 11.3308C31.6297 9.09158 29.0766 6.5 23.5 6.5ZM12.25 20C6.25 20 2.5 23 1 29C3.25 26 5.875 24.875 8.875 25.625C10.5867 26.0529 11.8101 27.2947 13.1642 28.6693C15.3702 30.9084 17.9234 33.5 23.5 33.5C29.5 33.5 33.25 30.5 34.75 24.5C32.5 27.5 29.875 28.625 26.875 27.875C25.1633 27.4471 23.9399 26.2053 22.5858 24.8307C20.3798 22.5916 17.8266 20 12.25 20Z"
+                          />
+                          <defs>
+                            <linearGradient
+                              id="%%GRADIENT_ID%%"
+                              x1="33.999"
+                              x2="1"
+                              y1="16.181"
+                              y2="16.181"
+                              gradientUnits="userSpaceOnUse"
+                            >
+                              <stop stop-color="%%GRADIENT_TO%%" />
+                              <stop offset="1" stop-color="%%GRADIENT_FROM%%" />
+                            </linearGradient>
+                          </defs>
+                        </svg>
+                      </div>
+                    </Link>
                     <nav className="flex flex-1 flex-col">
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
                         <li>
@@ -355,7 +358,7 @@ export default function CheckHome() {
                           >
                             <img
                               className="h-8 w-8 rounded-full bg-gray-800"
-                              src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
+                              src="/biryong.png"
                               alt=""
                             />
                             <span className="sr-only">프로필</span>
@@ -375,32 +378,34 @@ export default function CheckHome() {
         <div className="hidden xl:fixed xl:inset-y-0 xl:z-50 xl:flex xl:w-72 xl:flex-col">
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-black/10 px-6 ring-1 ring-white/5">
-            <div className="flex h-16 shrink-0 items-center">
-              <svg
-                className="h-8"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 47 40"
-                fill="none"
-              >
-                <path
-                  fill="#FB923C"
-                  d="M23.5 6.5C17.5 6.5 13.75 9.5 12.25 15.5C14.5 12.5 17.125 11.375 20.125 12.125C21.8367 12.5529 23.0601 13.7947 24.4142 15.1692C26.6202 17.4084 29.1734 20 34.75 20C40.75 20 44.5 17 46 11C43.75 14 41.125 15.125 38.125 14.375C36.4133 13.9471 35.1899 12.7053 33.8357 11.3308C31.6297 9.09158 29.0766 6.5 23.5 6.5ZM12.25 20C6.25 20 2.5 23 1 29C3.25 26 5.875 24.875 8.875 25.625C10.5867 26.0529 11.8101 27.2947 13.1642 28.6693C15.3702 30.9084 17.9234 33.5 23.5 33.5C29.5 33.5 33.25 30.5 34.75 24.5C32.5 27.5 29.875 28.625 26.875 27.875C25.1633 27.4471 23.9399 26.2053 22.5858 24.8307C20.3798 22.5916 17.8266 20 12.25 20Z"
-                />
-                <defs>
-                  <linearGradient
-                    id="%%GRADIENT_ID%%"
-                    x1="33.999"
-                    x2="1"
-                    y1="16.181"
-                    y2="16.181"
-                    gradientUnits="userSpaceOnUse"
-                  >
-                    <stop stop-color="%%GRADIENT_TO%%" />
-                    <stop offset="1" stop-color="%%GRADIENT_FROM%%" />
-                  </linearGradient>
-                </defs>
-              </svg>
-            </div>
+            <Link href="/" className="cursor-pointer">
+              <div className="flex h-16 shrink-0 items-center">
+                <svg
+                  className="h-8"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 47 40"
+                  fill="none"
+                >
+                  <path
+                    fill="#FB923C"
+                    d="M23.5 6.5C17.5 6.5 13.75 9.5 12.25 15.5C14.5 12.5 17.125 11.375 20.125 12.125C21.8367 12.5529 23.0601 13.7947 24.4142 15.1692C26.6202 17.4084 29.1734 20 34.75 20C40.75 20 44.5 17 46 11C43.75 14 41.125 15.125 38.125 14.375C36.4133 13.9471 35.1899 12.7053 33.8357 11.3308C31.6297 9.09158 29.0766 6.5 23.5 6.5ZM12.25 20C6.25 20 2.5 23 1 29C3.25 26 5.875 24.875 8.875 25.625C10.5867 26.0529 11.8101 27.2947 13.1642 28.6693C15.3702 30.9084 17.9234 33.5 23.5 33.5C29.5 33.5 33.25 30.5 34.75 24.5C32.5 27.5 29.875 28.625 26.875 27.875C25.1633 27.4471 23.9399 26.2053 22.5858 24.8307C20.3798 22.5916 17.8266 20 12.25 20Z"
+                  />
+                  <defs>
+                    <linearGradient
+                      id="%%GRADIENT_ID%%"
+                      x1="33.999"
+                      x2="1"
+                      y1="16.181"
+                      y2="16.181"
+                      gradientUnits="userSpaceOnUse"
+                    >
+                      <stop stop-color="%%GRADIENT_TO%%" />
+                      <stop offset="1" stop-color="%%GRADIENT_FROM%%" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+            </Link>
             <nav className="flex flex-1 flex-col">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
@@ -458,7 +463,7 @@ export default function CheckHome() {
                   >
                     <img
                       className="h-8 w-8 rounded-full bg-gray-800"
-                      src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.25&w=256&h=256&q=80"
+                      src="/biryong.png"
                       alt=""
                     />
                     <span className="sr-only">프로필</span>
@@ -632,19 +637,7 @@ export default function CheckHome() {
                               </a>
                             )}
                           </Menu.Item>
-                          <Menu.Item>
-                            {({ active }) => (
-                              <a
-                                href="#"
-                                className={classNames(
-                                  active ? "bg-gray-50" : "",
-                                  "block px-3 py-1 text-sm leading-6 text-gray-900"
-                                )}
-                              >
-                                날짜순
-                              </a>
-                            )}
-                          </Menu.Item>
+
                           <Menu.Item>
                             {({ active }) => (
                               <a
@@ -672,42 +665,46 @@ export default function CheckHome() {
           <aside className="lg:block hidden bg-black/10 lg:fixed lg:bottom-0 lg:right-0 lg:top-16 lg:w-96 lg:overflow-y-auto lg:border-l lg:border-white/5">
             <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
               <h2 className="text-base font-semibold leading-7 text-white">
-                검색 랭킹
+                {rankingFlag === false ? "검색 랭킹" : "적발 랭킹"}
               </h2>
               <a
                 href="#"
+                onClick={() => {
+                  setRankingFlag(!rankingFlag);
+                }}
                 className="text-sm font-semibold leading-6 text-orange-400"
               >
-                모두 보기
+                {rankingFlag === false ? "적발 랭킹" : "검색 랭킹"}
               </a>
             </header>
             <ul role="list" className="divide-y divide-white/5">
-              {activityItems.map((item) => (
-                <li
-                  key={item.commit}
-                  className="cursor-pointer hover:bg-gray-800 px-4 py-4 sm:px-6 lg:px-8"
-                  onClick={() => {
-                    setSearchKeyword(item.user.name as any);
-                    setCameraOpened(false);
-                  }}
-                >
-                  <div className="flex items-center gap-x-3">
-                    <img
-                      src={item.user.imageUrl}
-                      alt=""
-                      className="h-6 w-6 flex-none rounded-full bg-gray-800"
-                    />
-                    <h3 className="flex-auto truncate text-sm font-semibold leading-6 text-white">
-                      {item.user.name}
-                    </h3>
-                    <time
-                      dateTime={item.dateTime}
-                      className="flex-none text-xs text-gray-600"
-                    >
-                      {item.date}
-                    </time>
-                  </div>
-                  {/* <p className="mt-3 truncate text-sm text-gray-500">
+              {(rankingFlag === false ? activityItems : banItems).map(
+                (item) => (
+                  <li
+                    key={item.commit}
+                    className="cursor-pointer hover:bg-gray-800 px-4 py-4 sm:px-6 lg:px-8"
+                    onClick={() => {
+                      setSearchKeyword(item.user.name as any);
+                      setCameraOpened(false);
+                    }}
+                  >
+                    <div className="flex items-center gap-x-3">
+                      <img
+                        src={item.user.imageUrl}
+                        alt=""
+                        className="h-6 w-6 flex-none rounded-full bg-gray-800"
+                      />
+                      <h3 className="flex-auto truncate text-sm font-semibold leading-6 text-white">
+                        {item.user.name}
+                      </h3>
+                      <time
+                        dateTime={item.dateTime}
+                        className="flex-none text-xs text-gray-600"
+                      >
+                        {item.date}
+                      </time>
+                    </div>
+                    {/* <p className="mt-3 truncate text-sm text-gray-500">
                     Pushed to{" "}
                     <span className="text-gray-400">{item.projectName}</span> (
                     <span className="font-mono text-gray-400">
@@ -715,8 +712,9 @@ export default function CheckHome() {
                     </span>{" "}
                     on <span className="text-gray-400">{item.branch}</span>)
                   </p> */}
-                </li>
-              ))}
+                  </li>
+                )
+              )}
             </ul>
           </aside>
         </div>
