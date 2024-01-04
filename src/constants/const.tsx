@@ -118,7 +118,7 @@ export const activityItems = [
 export const banItems = [
   {
     user: {
-      name: "액체·분무·겔류",
+      name: "액체, 분무, 겔류",
       imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2310",
     },
     projectName: "ios-app",
@@ -129,7 +129,7 @@ export const banItems = [
   },
   {
     user: {
-      name: "인화성가스 및 액체",
+      name: "인화성가스, 인화성액체",
       imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2311",
     },
     projectName: "ios-app",
@@ -151,7 +151,7 @@ export const banItems = [
   },
   {
     user: {
-      name: "공구류",
+      name: "공구",
       imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2313",
     },
     projectName: "ios-app",
@@ -159,10 +159,11 @@ export const banItems = [
     branch: "main",
     date: "4위",
     dateTime: "2023-01-23T11:00",
+    // 공구
   },
   {
     user: {
-      name: "전자충격기 및 퇴치스프레이",
+      name: "전자충격기, 퇴치스프레이",
       imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2314",
     },
     projectName: "ios-app",
@@ -173,7 +174,7 @@ export const banItems = [
   },
   {
     user: {
-      name: "총기류 및 구성부품",
+      name: "총기류",
       imageUrl: "	https://www.avsec365.or.kr/etc/file/image.do?fileId=2315",
     },
     projectName: "ios-app",
@@ -217,7 +218,7 @@ export const banItems = [
   },
   {
     user: {
-      name: "위험물질 및 독성물질",
+      name: "위험물질, 독성물질",
       imageUrl: "https://www.avsec365.or.kr/etc/file/image.do?fileId=2319",
     },
     projectName: "ios-app",

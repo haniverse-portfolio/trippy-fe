@@ -46,11 +46,20 @@ function filterRules(rules: string[]): string[] {
 export function ForbidList() {
   const { data: searchKeyword, setData: setSearchKeyword } = useSearchKeyword();
   const { data: currentItem, setData: setCurrentItem } = useCurrentItem();
-  const { data, error } = useSWR(avecURL + searchKeyword, fetcher, {
-    revalidateIfStale: false,
-    revalidateOnFocus: true,
-    revalidateOnReconnect: true,
-  });
+
+  const keywords = (searchKeyword || "").split(",").map((k) => k.trim());
+
+  // 각 키워드에 대해 SWR 훅을 사용하여 데이터를 가져옵니다
+  const { data, error } = useSWR(
+    keywords.map((keyword) => `${avecURL}${keyword}`),
+    (url) => Promise.all(url.map(fetcher)),
+    {
+      revalidateIfStale: false,
+      revalidateOnFocus: true,
+      revalidateOnReconnect: true,
+    }
+  );
+
   const { data: itemSidebarOpened, setData: setItemSidebarOpened } =
     useItemSidebarOpened();
 
@@ -134,7 +143,7 @@ export function ForbidList() {
   }
   return (
     <ul role="list" className="divide-y divide-white/5">
-      {data.map((cur: any) => {
+      {data.flat().map((cur: any) => {
         // "X"의 개수에 따라 상태 설정
         const xCount = cur.forbidRule.reduce((count: number, rule: string) => {
           return rule.endsWith("X") ? count + 1 : count;
