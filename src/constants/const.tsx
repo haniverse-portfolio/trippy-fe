@@ -140,7 +140,7 @@ export const banItems = [
   },
   {
     user: {
-      name: "뾰족하거나 날카로운 물체",
+      name: "칼, 가위, 면도기",
       imageUrl: "	https://www.avsec365.or.kr/etc/file/image.do?fileId=2312",
     },
     projectName: "ios-app",

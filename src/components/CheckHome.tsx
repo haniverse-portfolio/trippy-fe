@@ -16,6 +16,7 @@ import {
   useCameraStarted,
   useCapturedImage,
   useCheckSidebarOpened,
+  useItemSidebarOpened,
   useMediaStream,
   useRankingFlag,
   useSearchKeyword,
@@ -48,6 +49,8 @@ export default function CheckHome() {
   const { data: isCameraStarted, setData: setIsCameraStarted } =
     useCameraStarted();
   const { data: rankingFlag, setData: setRankingFlag } = useRankingFlag();
+  const { data: itemSidebarOpened, setData: setItemSidebarOpened } =
+    useItemSidebarOpened();
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -168,7 +171,7 @@ export default function CheckHome() {
             role="status"
             className="space-y-8 animate-pulse md:space-y-0 md:space-x-8 rtl:space-x-reverse md:flex md:items-center"
           >
-            <div className="flex items-center justify-center w-full h-48 bg-gray-300 rounded sm:w-96 dark:bg-gray-700">
+            <div className="flex items-center justify-center w-full h-48 md:bg-gray-300 rounded sm:w-96 dark:bg-gray-700">
               <svg
                 className="w-10 h-10 text-gray-200 dark:text-gray-600"
                 aria-hidden="true"
@@ -184,7 +187,7 @@ export default function CheckHome() {
         </div>
       );
     }
-    if (data.length === 0) {
+    if (data.class_name === "") {
       return (
         <div
           style={{ height: "calc(100vh - 15rem)" }}
@@ -210,7 +213,7 @@ export default function CheckHome() {
       );
     }
     // conf : 배열
-    setSearchKeyword(data.class_name[0]);
+    setSearchKeyword(data.class_name);
     return <></>;
   }
 
@@ -507,7 +510,7 @@ export default function CheckHome() {
                     onChange={(e) => {
                       if (e.currentTarget.value !== "") setCameraOpened(false);
                       setSearchKeyword(e.currentTarget.value);
-                      setSidebarOpen(false);
+                      setItemSidebarOpened(false);
                     }}
                     // onKeyUp={(e) => {
                     //   if (e.key === "Enter") {
@@ -518,7 +521,8 @@ export default function CheckHome() {
                     autoComplete="off"
                     id="search-field"
                     className="block h-full w-full border-0 bg-transparent py-0 pl-8 pr-0 text-white focus:ring-0 sm:text-sm"
-                    placeholder="반입 물품을 확인해보세요"
+                    placeholder="반입 물품을 입력해보세요"
+                    // 반입 물품을 확인해보세요
                     // type="search"
                     // name="search"
                   />
