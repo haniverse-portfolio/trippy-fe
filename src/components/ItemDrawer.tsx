@@ -5,7 +5,11 @@ import {
   CurrencyEuroIcon,
   EllipsisVerticalIcon,
 } from "@heroicons/react/20/solid";
-import { useCurrentItem, useItemSidebarOpened } from "@/hooks/states";
+import {
+  useCurrentItem,
+  useItemSidebarOpened,
+  useSearchKeyword,
+} from "@/hooks/states";
 
 function classNames(...classes: any) {
   return classes.filter(Boolean).join(" ");
@@ -28,6 +32,7 @@ export default function ItemDrawer() {
   const { data: itemSidebarOpened, setData: setItemSidebarOpened } =
     useItemSidebarOpened();
   const { data: currentItem, setData: setCurrentItem } = useCurrentItem();
+  const { data: searchKeyword, setData: setSearchKeyword } = useSearchKeyword();
 
   const statuses: { [key: string]: string } = {
     offline: "text-yellow-500 bg-yellow-100/10",
@@ -123,15 +128,61 @@ export default function ItemDrawer() {
                               <div className="mt-5 flex flex-wrap space-y-3 sm:space-x-3 sm:space-y-0">
                                 <button
                                   type="button"
-                                  className="inline-flex w-full flex-shrink-0 items-center justify-center rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:flex-1"
+                                  className="gap-x-2 inline-flex w-full flex-shrink-0 items-center justify-center rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:flex-1"
                                 >
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                    className="w-4 h-4"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0-3-3m3 3 3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
+                                    />
+                                  </svg>
                                   담기
                                 </button>
                                 <button
+                                  onClick={() => {
+                                    const urlToCopy = `https://trippy.kr/check/${
+                                      (currentItem as any)?.korName ?? ""
+                                    }`;
+                                    navigator.clipboard
+                                      .writeText(urlToCopy)
+                                      .then(() => {
+                                        console.log(
+                                          "URL이 클립보드에 복사되었습니다!"
+                                        );
+                                      })
+                                      .catch((err) => {
+                                        console.error(
+                                          "클립보드에 복사하는 데 실패했습니다:",
+                                          err
+                                        );
+                                      });
+                                  }}
                                   type="button"
-                                  className="inline-flex w-full flex-1 items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                  className="gap-x-2 inline-flex w-full flex-1 items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
                                 >
-                                  공유하기
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                    className="w-4 h-4"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="M8.25 7.5V6.108c0-1.135.845-2.098 1.976-2.192.373-.03.748-.057 1.123-.08M15.75 18H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08M15.75 18.75v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5A3.375 3.375 0 0 0 6.375 7.5H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-1.5a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M6.75 7.5H4.875c-.621 0-1.125.504-1.125 1.125v12c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V16.5a9 9 0 0 0-9-9Z"
+                                    />
+                                  </svg>
+                                  링크 복사하기
                                 </button>
                               </div>
                             </div>

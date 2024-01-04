@@ -1,4 +1,6 @@
-import { Fragment, useRef, useState } from "react";
+"use client";
+import { Fragment, useRef, useState, useEffect } from "react";
+import { useRouter } from "next/router";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import { ServerIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
@@ -24,6 +26,8 @@ import {
 import ItemDrawer from "./ItemDrawer";
 import { LoaderList } from "./LoaderList";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const navigation = [
   // { name: "Projects", href: "#", icon: FolderIcon, current: false },
@@ -39,6 +43,7 @@ function classNames(...classes: any) {
 }
 
 export default function CheckHome() {
+  const [enterFlag, setEnterFlag] = useState(false);
   const { data: sidebarOpen, setData: setSidebarOpen } =
     useCheckSidebarOpened();
   const { data: searchKeyword, setData: setSearchKeyword } = useSearchKeyword();
@@ -85,9 +90,17 @@ export default function CheckHome() {
         const capturedImageDataUrl = canvas.toDataURL("image/jpeg");
         setCapturedImage(capturedImageDataUrl);
         // 카메라 스트림 종료
-        if (mediaStream !== null && mediaStream !== undefined)
+        if (mediaStream) {
           mediaStream.getTracks().forEach((track) => track.stop());
+          setMediaStream(null); // mediaStream 상태를 null로 설정
+        }
       }
+    }
+  };
+  const stopCamera = () => {
+    if (mediaStream) {
+      mediaStream.getTracks().forEach((track) => track.stop());
+      setMediaStream(null); // mediaStream 상태를 null로 설정
     }
   };
 
@@ -216,7 +229,12 @@ export default function CheckHome() {
     setSearchKeyword(data.class_name);
     return <></>;
   }
-
+  const path = usePathname();
+  if (enterFlag === false) {
+    if (decodeURIComponent(path.split("/")[2]) !== "undefined")
+      setSearchKeyword(decodeURIComponent(path.split("/")[2]));
+    setEnterFlag(true);
+  }
   return (
     <html className="h-full bg-gray-900">
       <ItemDrawer />
@@ -544,7 +562,7 @@ export default function CheckHome() {
                         await setSearchKeyword("");
                         await setCameraOpened(false);
                         await setIsCameraStarted(false);
-                        await setSidebarOpen(false);
+                        await setItemSidebarOpened(false);
                         if (mediaStream !== null && mediaStream !== undefined)
                           mediaStream
                             .getTracks()
