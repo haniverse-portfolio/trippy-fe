@@ -567,6 +567,14 @@ export default function CheckHome() {
                           mediaStream
                             .getTracks()
                             .forEach((track) => track.stop());
+                        await setSearchKeyword("");
+                        await setCameraOpened(false);
+                        await setIsCameraStarted(false);
+                        await setItemSidebarOpened(false);
+                        if (mediaStream !== null && mediaStream !== undefined)
+                          mediaStream
+                            .getTracks()
+                            .forEach((track) => track.stop());
                       }}
                       className="cursor-pointer absolute inset-y-0 right-10 h-full w-5 text-gray-500"
                       // pointer-events-none
