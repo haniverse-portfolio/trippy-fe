@@ -101,7 +101,7 @@ export default function Login() {
       <button
         className="w-16 h-16 bg-yellow-300"
         onClick={() => {
-          router.push("http://13.124.243.62/auth/login/kakao");
+          router.push("http://165.246.80.7:3000/auth/login/kakao");
           getKakaoLogin();
         }}
       >

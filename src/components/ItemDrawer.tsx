@@ -1,4 +1,5 @@
-import { Fragment, useState } from "react";
+import { Disclosure } from "@headlessui/react";
+import { Fragment, useEffect, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
@@ -6,7 +7,9 @@ import {
   EllipsisVerticalIcon,
 } from "@heroicons/react/20/solid";
 import {
+  useChatbotOpened,
   useCurrentItem,
+  useItemId,
   useItemSidebarOpened,
   useSearchKeyword,
 } from "@/hooks/states";
@@ -39,6 +42,128 @@ export default function ItemDrawer() {
     online: "text-green-400 bg-green-400/10",
     error: "text-rose-400 bg-rose-400/10",
   };
+
+  const [comment, setComment] = useState("");
+  const { data: commentList, setData: setCommentList } = useChatbotOpened();
+  const { data: itemId, setData: setItemId } = useItemId();
+  const [token, setToken] = useState(
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Im5ubm5iQGdtYWlsLmNvbSIsInR5cGUiOiJhY2Nlc3MiLCJpYXQiOjE3MDg5NTA3MzIsImV4cCI6MTcwODk1MTAzMn0.rxXsIcuXIwdtJc1h4jsE-3NE8mpMEiuhTYM84RgjUwI"
+  );
+  const [commentId, setCommentId] = useState(6);
+
+  const getFetcher = (url: string) =>
+    fetch(url + itemId, {
+      method: "GET",
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    });
+
+  const getCommentList = () => {
+    const url = "http://13.124.243.62/comment";
+    getFetcher(url)
+      .then((response) => {
+        console.log("Get Comment Success", response);
+        console.log(response.message);
+        setCommentList(response.message);
+      })
+      .catch((error) => {
+        console.error("Error sending message:", error);
+      });
+  };
+
+  const postFetcher = (url: string) =>
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ itemId: itemId, content: comment }),
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    });
+
+  const postComment = () => {
+    const url = "http://13.124.243.62/comment";
+    postFetcher(url)
+      .then((response) => {
+        console.log("Message sent successfully:", response);
+        console.log(response.message);
+      })
+      .catch((error) => {
+        console.error("Error sending message:", error);
+      });
+  };
+
+  const updateFetcher = (url: string) =>
+    fetch(url, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        itemId: itemId,
+        content: comment,
+        commentId: commentId,
+      }),
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    });
+
+  const updateComment = () => {
+    const url = "http://13.124.243.62/comment";
+    updateFetcher(url)
+      .then((response) => {
+        console.log("Message sent successfully:", response);
+        console.log(response.message);
+      })
+      .catch((error) => {
+        console.error("Error sending message:", error);
+      });
+  };
+
+  const deleteFetcher = (url: string) =>
+    fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        itemId: itemId,
+      }),
+    }).then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    });
+
+  const deleteComment = () => {
+    const url = "http://13.124.243.62/comment";
+    updateFetcher(url)
+      .then((response) => {
+        console.log("Message sent successfully:", response);
+        console.log(response.message);
+      })
+      .catch((error) => {
+        console.error("Error sending message:", error);
+      });
+  };
+
+  useEffect(() => {
+    getCommentList();
+  }, [itemId]);
 
   return (
     <Transition.Root show={itemSidebarOpened} as={Fragment}>
@@ -127,6 +252,9 @@ export default function ItemDrawer() {
                               </div>
                               <div className="mt-5 flex flex-wrap space-y-3 sm:space-x-3 sm:space-y-0">
                                 <button
+                                  onClick={() => {
+                                    alert("나의 물품 담기 성공!");
+                                  }}
                                   type="button"
                                   className="gap-x-2 inline-flex w-full flex-shrink-0 items-center justify-center rounded-md bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-orange-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:flex-1"
                                 >
@@ -189,8 +317,8 @@ export default function ItemDrawer() {
                           </div>
                         </div>
                       </div>
-                      <div className="px-4 pb-5 pt-5 sm:px-0 sm:pt-0">
-                        <dl className="space-y-8 px-4 sm:space-y-6 sm:px-6">
+                      <div className=" pb-5 pt-5 sm:px-0 sm:pt-0">
+                        <dl className="px-8 sm:px-6 space-y-8  sm:space-y-6">
                           <div>
                             <dt
                               onClick={() => {
@@ -234,16 +362,37 @@ export default function ItemDrawer() {
                             </dd>
                           </div>
                           <div>
-                            <dt className="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
-                              특수 규칙
-                            </dt>
-                            <dd className="mt-1 text-sm text-gray-400 sm:col-span-2">
-                              <p>
-                                {(currentItem as any)?.specialRule === ""
-                                  ? "없음"
-                                  : (currentItem as any)?.specialRule ?? "없음"}
-                              </p>
-                            </dd>
+                            <Disclosure as="div" key={0} className="">
+                              {({ open }) => (
+                                <>
+                                  <div className="flex justify-between items-start">
+                                    <Disclosure.Button className="flex w-full items-start justify-between text-left text-gray-900">
+                                      <dt className="text-sm font-medium text-gray-500 sm:flex-shrink-0 whitespace-nowrap">
+                                        <span className=" flex items-center">
+                                          {open ? (
+                                            <p className="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
+                                              닫기
+                                            </p>
+                                          ) : (
+                                            <p className="underline text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
+                                              특수 규칙
+                                            </p>
+                                          )}
+                                        </span>
+                                      </dt>
+                                    </Disclosure.Button>
+                                  </div>
+                                  <Disclosure.Panel as="dd" className="">
+                                    <p className="text-white py-2">
+                                      {(currentItem as any)?.specialRule === ""
+                                        ? "없음"
+                                        : (currentItem as any)?.specialRule ??
+                                          "없음"}
+                                    </p>
+                                  </Disclosure.Panel>
+                                </>
+                              )}
+                            </Disclosure>
                           </div>
                           {/* <div>
                             <dt className="text-sm font-medium text-gray-500 sm:w-40 sm:flex-shrink-0">
@@ -275,7 +424,190 @@ export default function ItemDrawer() {
                             </dd>
                           </div> */}
                         </dl>
+                        <div className="w-full py-4 shadow-xs"></div>
+                        <div className="mt-6 px-4 sm:mt-8 sm:flex sm:items-end sm:px-6">
+                          <div className="sm:flex-1">
+                            <div>
+                              <div className="flex items-center justify-between">
+                                <h3 className="text-xl font-bold text-white sm:text-2xl">
+                                  리뷰{" "}
+                                </h3>
+                                <div className="flex gap-x-4">
+                                  <div
+                                    onClick={() => {
+                                      alert("이 물품을 추천하시겠습니까?");
+                                    }}
+                                    className="flex gap-x-2 "
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke-width="1.5"
+                                      stroke="#E50012"
+                                      className="w-6 h-6 cursor-pointer"
+                                    >
+                                      <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z"
+                                      />
+                                    </svg>
+                                    <p className="text-white">1</p>
+                                  </div>
+                                  <div
+                                    onClick={() => {
+                                      alert(
+                                        "이 물품을 추천하지 않으시겠습니까?"
+                                      );
+                                    }}
+                                    className="flex gap-x-2 "
+                                  >
+                                    <svg
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      fill="none"
+                                      viewBox="0 0 24 24"
+                                      stroke-width="1.5"
+                                      stroke="#18B0AE"
+                                      className="w-6 h-6 cursor-pointer"
+                                    >
+                                      <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M7.498 15.25H4.372c-1.026 0-1.945-.694-2.054-1.715a12.137 12.137 0 0 1-.068-1.285c0-2.848.992-5.464 2.649-7.521C5.287 4.247 5.886 4 6.504 4h4.016a4.5 4.5 0 0 1 1.423.23l3.114 1.04a4.5 4.5 0 0 0 1.423.23h1.294M7.498 15.25c.618 0 .991.724.725 1.282A7.471 7.471 0 0 0 7.5 19.75 2.25 2.25 0 0 0 9.75 22a.75.75 0 0 0 .75-.75v-.633c0-.573.11-1.14.322-1.672.304-.76.93-1.33 1.653-1.715a9.04 9.04 0 0 0 2.86-2.4c.498-.634 1.226-1.08 2.032-1.08h.384m-10.253 1.5H9.7m8.075-9.75c.01.05.027.1.05.148.593 1.2.925 2.55.925 3.977 0 1.487-.36 2.89-.999 4.125m.023-8.25c-.076-.365.183-.75.575-.75h.908c.889 0 1.713.518 1.972 1.368.339 1.11.521 2.287.521 3.507 0 1.553-.295 3.036-.831 4.398-.306.774-1.086 1.227-1.918 1.227h-1.053c-.472 0-.745-.556-.5-.96a8.95 8.95 0 0 0 .303-.54"
+                                      />
+                                    </svg>
+                                    <p className="text-white">0</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="border-[1px] border-[#585F6D] mt-6  rounded-md flex justify-start items-start p-2">
+                                <p className="text-white">
+                                  {(currentItem as any)?.korName ?? ""}{" "}
+                                  반입해봤는데 괜찮았어요! 다들 안심하셔도
+                                  될듯해요.
+                                </p>
+                              </div>
+                              <div className="mt-2 flex justify-between items-center">
+                                <p className="text-[#585F6D]">24/02/27 02:41</p>
+                                <div className=" flex">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="#585F6D"
+                                    className="w-6 h-6 cursor-pointer"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                                    />
+                                  </svg>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="#585F6D"
+                                    className="ml-2 mr-2 w-6 h-6 cursor-pointer"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                                    />
+                                  </svg>
+                                </div>
+                              </div>
+                              <div className="border-[1px] border-[#585F6D] mt-8  rounded-md flex justify-start items-start p-2">
+                                <p className="text-white">
+                                  캐리어에 넣고 가니까 보안검색대에 걸려서 5분
+                                  정도 대기했네요. 다들 조심하세요.
+                                </p>
+                              </div>
+                              <div className="mt-2 flex justify-between items-center">
+                                <p className="text-[#585F6D]">24/02/27 05:32</p>
+                                <div className=" flex">
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="#585F6D"
+                                    className="w-6 h-6 cursor-pointer"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10"
+                                    />
+                                  </svg>
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="#585F6D"
+                                    className="ml-2 mr-2 w-6 h-6 cursor-pointer"
+                                  >
+                                    <path
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                                    />
+                                  </svg>
+                                </div>
+                              </div>
+                              <div className="h-[150px]"></div>
+                              {/* <p className="text-sm text-gray-500">
+                                  @ashleyporter
+                                </p> */}
+                            </div>
+                          </div>
+                        </div>
                       </div>
+                    </div>
+                  </div>
+                  <div className="sticky bottom-0 h-[60px] w-full">
+                    <div className="grid grid-cols-[320px_auto] ">
+                      <textarea
+                        // onKeyDown={(e) => {
+                        //   if (chatContent.trim() === "") return;
+                        //   if (e.key === "Enter") {
+                        //     e.preventDefault();
+                        //     e.stopPropagation();
+                        //     setTimeout(postMessage, 0);
+                        //   }
+                        // }}
+                        className="focus:ring-0 w-full resize-none border-0 bg-white"
+                        placeholder="리뷰를 작성해주세요"
+                        value={comment}
+                        onChange={(e) => {
+                          setComment(e.target.value);
+                        }}
+                      />
+                      {/* 전송 */}
+                      <button
+                        onClick={() => {}}
+                        className="flex items-center justify-center cursor-pointer bg-[#0E131D]"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke-width="1.5"
+                          stroke={"#F77F2F"}
+                          className="w-6 h-6"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5"
+                          />
+                        </svg>
+                      </button>
                     </div>
                   </div>
                 </Dialog.Panel>

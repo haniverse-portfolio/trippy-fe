@@ -150,6 +150,24 @@ export const useChatbotIndex = () => {
   };
 };
 
+interface Chat {
+  date: string;
+  user: string;
+  content: string;
+}
+
+export const useChatList = () => {
+  const { data, mutate } = useSWRImmutable<Chat[]>("chatList", {
+    fallbackData: [],
+    revalidateOnReconnect: false,
+  });
+
+  return {
+    data: data || [],
+    setData: mutate,
+  };
+};
+
 export const useChatContent = () => {
   const { data, mutate } = useSWRImmutable<string>("chatContent", {
     fallbackData: "",
@@ -195,6 +213,36 @@ export const useJourneyList = () => {
 
 export const useJourneyIndex = () => {
   const { data, mutate } = useSWRImmutable<number>("journeyIndex", {
+    fallbackData: 0,
+    revalidateOnReconnect: false,
+  });
+
+  return {
+    data: data || 0,
+    setData: mutate,
+  };
+};
+
+interface Comment {
+  commentId: string;
+  itemId: string;
+  content: string;
+}
+
+export const useCommentList = () => {
+  const { data, mutate } = useSWRImmutable<Comment[]>("commentList", {
+    fallbackData: [],
+    revalidateOnReconnect: false,
+  });
+
+  return {
+    data: data || [],
+    setData: mutate,
+  };
+};
+
+export const useItemId = () => {
+  const { data, mutate } = useSWRImmutable<number>("itemId", {
     fallbackData: 0,
     revalidateOnReconnect: false,
   });

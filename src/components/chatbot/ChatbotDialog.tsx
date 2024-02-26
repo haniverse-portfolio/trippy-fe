@@ -4,6 +4,7 @@ import { Dialog, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/24/outline";
 import {
   useChatContent,
+  useChatList,
   useChatbotIndex,
   useChatbotOpened,
 } from "@/hooks/states";
@@ -14,9 +15,11 @@ import Setting from "./Setting";
 import useSWR from "swr";
 
 export default function ChatbotDialog() {
+  const { data: chatList, setData: setChatList } = useChatList();
   const { data: chatbotOpened, setData: setChatbotOpened } = useChatbotOpened();
   const { data: chatbotIndex, setData: setChatbotIndex } = useChatbotIndex();
   const { data: chatContent, setData: setChatContent } = useChatContent();
+  const [textareaLocked, setTextareaLocked] = useState(false);
 
   const fetcher = (url: string) =>
     fetch(url, {
@@ -28,17 +31,33 @@ export default function ChatbotDialog() {
       }
       return response.json();
     });
-
+  const formatTime = (date: any) => {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "오후" : "오전";
+    const formattedHours = hours % 12 === 0 ? 12 : hours % 12;
+    const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+    return `${ampm} ${formattedHours}:${formattedMinutes}`;
+  };
   const postMessage = () => {
     const url = "http://165.246.80.7:8000/chatbot/";
     fetcher(url)
       .then((response) => {
         console.log("Message sent successfully:", response);
         console.log(response.message);
+        const currentDate = formatTime(new Date()); // 현재 날짜와 시간을 ISO 형식으로 가져옴
+        const newMessage = {
+          user: "receiver",
+          content: response.answer,
+          date: currentDate,
+        };
+        setChatList((prevChatList) => [...(prevChatList || []), newMessage]); // 채팅 리스트에 새로운 메시지 추가
         setChatContent("");
+        setTextareaLocked(false);
       })
       .catch((error) => {
         console.error("Error sending message:", error);
+        setTextareaLocked(false);
       });
   };
 
@@ -79,14 +98,15 @@ export default function ChatbotDialog() {
                     {chatbotIndex === 1 ? (
                       <div className="grid grid-cols-[320px_auto] rounded-[20px] bg-white">
                         <textarea
-                          onKeyDown={(e) => {
-                            if (chatContent.trim() === "") return;
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setTimeout(postMessage, 0); // postMessage를 다음 이벤트 루프 사이클에서 실행
-                            }
-                          }}
+                          disabled={textareaLocked}
+                          // onKeyDown={(e) => {
+                          //   if (chatContent.trim() === "") return;
+                          //   if (e.key === "Enter") {
+                          //     e.preventDefault();
+                          //     e.stopPropagation();
+                          //     setTimeout(postMessage, 0);
+                          //   }
+                          // }}
                           className="focus:ring-0 w-full resize-none border-0 mx-[10px]  mb-[10px] rounded-[20px] bg-[#F0EFF0]"
                           placeholder="메시지를 입력해주세요"
                           value={chatContent}
@@ -96,10 +116,21 @@ export default function ChatbotDialog() {
                         />
                         {/* 전송 */}
                         <button
+                          disabled={textareaLocked || chatContent.trim() === ""}
                           onClick={() => {
-                            // 메시지가 비어있지 않을 때만 전송합니다.
                             if (chatContent.trim() === "") return;
-                            postMessage(); // 버튼을 눌렀을 때 호출되지 않습니다.
+                            setTextareaLocked(true);
+                            const currentDate = formatTime(new Date()); // 현재 날짜와 시간을 ISO 형식으로 가져옴
+                            const newMessage = {
+                              user: "sender",
+                              content: chatContent,
+                              date: currentDate,
+                            };
+                            setChatList((prevChatList) => [
+                              ...(prevChatList || []),
+                              newMessage,
+                            ]); // 채팅 리스트에 새로운 메시지 추가
+                            postMessage(); // 메시지 전송
                           }}
                           className="flex items-center justify-center cursor-pointer"
                         >
@@ -108,7 +139,11 @@ export default function ChatbotDialog() {
                             fill="none"
                             viewBox="0 0 24 24"
                             stroke-width="1.5"
-                            stroke="#F77F2F"
+                            stroke={
+                              textareaLocked || chatContent.trim() === ""
+                                ? "#C6CAD1"
+                                : "#F77F2F"
+                            }
                             className="w-6 h-6"
                           >
                             <path

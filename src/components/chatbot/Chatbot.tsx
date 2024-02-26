@@ -1,10 +1,12 @@
-import { useChatbotOpened } from "@/hooks/states";
+import { useChatbotOpened, useItemSidebarOpened } from "@/hooks/states";
 
 export default function Chatbot() {
   const { data: chatbotOpened, setData: setChatbotOpened } = useChatbotOpened();
+  const { data: itemSidebarOpened, setData: setItemSidebarOpened } =
+    useItemSidebarOpened();
 
   return (
-    <div>
+    <div className={itemSidebarOpened === true ? "hidden" : ""}>
       <button
         onClick={() => {
           setChatbotOpened(true);

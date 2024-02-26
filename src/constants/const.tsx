@@ -234,7 +234,7 @@ export const uploadURL =
   "https://port-0-trippy-be-cn1vmr2clp9p0y3x.sel5.cloudtype.app/image/upload";
 
 export const countryList = {
-  "🇨🇦 캐나다": "canada",
-  "🇺🇸 미국": "us",
-  "🇰🇷 한국": "south korea",
+  캐나다: "canada",
+  미국: "us",
+  한국: "korea",
 };

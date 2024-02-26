@@ -2,12 +2,18 @@
 import { Fragment, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Dialog, Menu, Transition } from "@headlessui/react";
-import { GiftIcon, ServerIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  GiftIcon,
+  ServerIcon,
+  XMarkIcon,
+  ArchiveBoxIcon,
+  MagnifyingGlassIcon,
+  HandThumbUpIcon,
+} from "@heroicons/react/24/outline";
 import {
   Bars3Icon,
   CameraIcon,
   ChevronUpDownIcon,
-  MagnifyingGlassIcon,
   PhotoIcon,
 } from "@heroicons/react/20/solid";
 import { activityItems, banItems, uploadURL } from "@/constants/const";
@@ -27,18 +33,20 @@ import {
   useSearchKeyword,
   useSidebarIndex,
 } from "@/hooks/states";
-import ItemDrawer from "./ItemDrawer";
 import { LoaderList } from "./LoaderList";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePathname } from "next/navigation";
 import Chatbot from "./chatbot/Chatbot";
 import ChatbotDialog from "./chatbot/ChatbotDialog";
+import ItemDrawer from "./ItemDrawer";
+import { RecommendList } from "./RecommendList";
 
 const navigation = [
   // { name: "Projects", href: "#", icon: FolderIcon, current: false },
-  { name: "물품 확인", href: "#", icon: ServerIcon, current: true },
-  { name: "추천 물품", href: "#", icon: GiftIcon, current: false },
+  { name: "물품 검사", href: "#", icon: MagnifyingGlassIcon, current: true },
+  { name: "물품 추천", href: "#", icon: HandThumbUpIcon, current: false },
+  { name: "나의 물품", href: "#", icon: ArchiveBoxIcon, current: false },
   // { name: "Domains", href: "#", icon: GlobeAltIcon, current: false },
   // { name: "Usage", href: "#", icon: ChartBarSquareIcon, current: false },
   // { name: "Settings", href: "#", icon: Cog6ToothIcon, current: false },
@@ -65,7 +73,6 @@ export default function CheckHome() {
   }
   const { data: isCameraOpened, setData: setCameraOpened } = useCameraOpened();
   const { data: mediaStream, setData: setMediaStream } = useMediaStream();
-  const { data: capturedImage, setData: setCapturedImage } = useCapturedImage();
   const { data: isCameraStarted, setData: setIsCameraStarted } =
     useCameraStarted();
   {
@@ -113,11 +120,8 @@ export default function CheckHome() {
       if (context) {
         context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
         const capturedImageDataUrl = canvas.toDataURL("image/jpeg");
-        setCapturedImage(capturedImageDataUrl);
-        // 카메라 스트림 종료
-        if (mediaStream) {
-          mediaStream.getTracks().forEach((track) => track.stop());
-          setMediaStream(null); // mediaStream 상태를 null로 설정
+        {
+          /* send */
         }
       }
     }
@@ -261,6 +265,11 @@ export default function CheckHome() {
       setSearchKeyword(decodeURIComponent(path.split("/")[2]));
     setEnterFlag(true);
   }
+
+  useEffect(() => {
+    setSearchKeyword("");
+  }, [sidebarIndex]);
+
   return (
     <html className="h-full bg-gray-900">
       <ItemDrawer />
@@ -320,7 +329,7 @@ export default function CheckHome() {
                   </Transition.Child>
                   {/* Sidebar component, swap this element with another sidebar if you like */}
 
-                  <div className="flex grow flex-col gap-y-5 overflow-y-auto  px-6 ring-1 ring-white/10">
+                  <div className="bg-gray-900 flex grow flex-col gap-y-5 overflow-y-auto  px-6 ring-1 ring-white/10">
                     <Link href="/" className="cursor-pointer">
                       <div className="flex h-16 shrink-0 items-center">
                         <svg
@@ -353,12 +362,17 @@ export default function CheckHome() {
                       <ul role="list" className="flex flex-1 flex-col gap-y-7">
                         <li>
                           <ul role="list" className="-mx-2 space-y-1">
-                            {navigation.map((item) => (
-                              <li key={item.name}>
+                            {navigation.map((item, index) => (
+                              <li
+                                key={item.name}
+                                onClick={() => {
+                                  setSidebarIndex(index);
+                                }}
+                              >
                                 <a
                                   href={item.href}
                                   className={classNames(
-                                    item.current
+                                    sidebarIndex === index
                                       ? "bg-gray-800 text-white"
                                       : "text-gray-400 hover:text-white hover:bg-gray-800",
                                     "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
@@ -378,6 +392,15 @@ export default function CheckHome() {
                           <div className="text-xs font-semibold leading-6 text-gray-400">
                             여행 목록
                           </div>
+                          <div className="h-[1px] my-[12px] bg-[#696F7C]" />
+                          <button
+                            onClick={() => {
+                              setJourneyOpened(true);
+                            }}
+                            className="bg-[#F77F2F] my-[8px] w-full hover:bg-opacity-80 text-white  py-[8px] px-[16px] rounded-full mt-[4px]"
+                          >
+                            새 행선지 추가
+                          </button>
 
                           <ul role="list" className="-mx-2 mt-2 space-y-1">
                             {journeyList.map((journeyPair, index) => (
@@ -403,16 +426,25 @@ export default function CheckHome() {
                         </li>
                         <li className="-mx-6 mt-auto">
                           <a
-                            href="#"
+                            href="/login"
                             className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800"
                           >
-                            <img
-                              className="h-8 w-8 rounded-full "
-                              src="/biryong.png"
-                              alt=""
-                            />
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke-width="1.5"
+                              stroke="currentColor"
+                              className="w-8 h-8"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                              />
+                            </svg>
                             <span className="sr-only">프로필</span>
-                            <span aria-hidden="true">트레버</span>
+                            <span aria-hidden="true">로그인</span>
                           </a>
                         </li>
                       </ul>
@@ -470,7 +502,7 @@ export default function CheckHome() {
                         <a
                           href={item.href}
                           className={classNames(
-                            item.current
+                            sidebarIndex === _i
                               ? " text-white hover:bg-gray-800"
                               : "text-gray-400 hover:text-white hover:bg-gray-800 ",
                             "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
@@ -532,16 +564,26 @@ export default function CheckHome() {
                 </li>
                 <li className="-mx-6 mt-auto">
                   <a
-                    href="#"
+                    href="/login"
                     className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800"
                   >
-                    <img
-                      className="h-8 w-8 rounded-full bg-gray-800"
-                      src="/biryong.png"
-                      alt=""
-                    />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      className="w-8 h-8"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                      />
+                    </svg>
+
                     <span className="sr-only">프로필</span>
-                    <span aria-hidden="true">트레버</span>
+                    <span aria-hidden="true">로그인</span>
                   </a>
                 </li>
               </ul>
@@ -607,7 +649,7 @@ export default function CheckHome() {
                         await startCamera();
                         await startCamera();
                       }}
-                      className="cursor-pointer absolute inset-y-0 right-10 h-full w-5 text-gray-500"
+                      className="cursor-pointer absolute inset-y-0 right-0 h-full w-5 text-gray-500"
                       // pointer-events-none
                       aria-hidden="true"
                     />
@@ -636,17 +678,6 @@ export default function CheckHome() {
                       aria-hidden="true"
                     />
                   )}
-                  <PhotoIcon
-                    onClick={async () => {
-                      await setSearchKeyword("");
-                      await setCameraOpened(true);
-                      await startCamera();
-                      await startCamera();
-                    }}
-                    className="cursor-pointer absolute inset-y-0 right-0 h-full w-5 text-gray-500"
-                    // pointer-events-none
-                    aria-hidden="true"
-                  />
                 </div>
               </form>
             </div>
@@ -667,7 +698,7 @@ export default function CheckHome() {
                         playsInline
                       />
                     </div>
-
+                    {/* 
                     <button
                       className="cursor-pointer absolute bottom-20 w-24 h-24 bg-white rounded-full mx-auto border-double border-2 border-gray-300 left-1/2 transform -translate-x-1/2"
                       onClick={handleButtonClick}
@@ -677,7 +708,7 @@ export default function CheckHome() {
                         // pointer-events-none
                         aria-hidden="true"
                       />
-                    </button>
+                    </button> */}
                   </div>
                 ) : (
                   <CameraSection />
@@ -689,7 +720,7 @@ export default function CheckHome() {
                     <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
                       <div className="flex justify-start items-center">
                         <h1 className="text-base font-semibold leading-7 text-white">
-                          반입 물품 확인
+                          반입 물품 검사
                         </h1>
                         <div className="ml-[16px] flex items-end justify-start">
                           <span
@@ -825,7 +856,7 @@ export default function CheckHome() {
                     </Menu>
                   </header>
                 </div>
-                <ForbidList />
+                <RecommendList />
               </div>
             </main>
           )}
@@ -854,6 +885,7 @@ export default function CheckHome() {
                     className="cursor-pointer hover:bg-gray-800 px-4 py-4 sm:px-6 lg:px-8"
                     onClick={() => {
                       setSearchKeyword(item.user.name as any);
+                      setSidebarIndex(0);
                       setCameraOpened(false);
                     }}
                   >

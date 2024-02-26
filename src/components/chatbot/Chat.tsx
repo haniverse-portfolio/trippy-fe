@@ -1,8 +1,9 @@
-import { useChatbotOpened } from "@/hooks/states";
+import { useChatList, useChatbotOpened } from "@/hooks/states";
 import Image from "next/image";
 
 export default function Chat() {
   const { data: chatbotOpened, setData: setChatbotOpened } = useChatbotOpened();
+  const { data: chatList, setData: setChatList } = useChatList();
 
   return (
     <div className=" h-[630px] rounded-t-[30px] overflow-scroll">
@@ -61,97 +62,54 @@ export default function Chat() {
             </div>
           </div>
         </div>
-        {/* sender */}
-        <div className=" m-[20px]">
-          <div>
-            <div className="items-end grid grid-cols-[30px_auto] gap-x-[6px] h-full">
-              <Image
-                width={30}
-                height={30}
-                alt=""
-                src="/logo.png"
-                className="rounded-[10px]"
-              />
-              <div className=" bg-[#F1F1F1] h-full rounded-[15px] ">
-                <p className="p-[12px]">안녕로봇</p>
+        {chatList.map((chat, index) => (
+          <div key={index} className=" m-[20px]">
+            <div>
+              <div
+                className={`items-end grid ${
+                  chat.user === "sender"
+                    ? "grid-cols-[auto_30px]"
+                    : "grid-cols-[30px_auto]"
+                } gap-x-[6px] h-full`}
+              >
+                <div
+                  className={`${
+                    chat.user === "sender" ? "block" : "hidden"
+                  } bg-[#F1F1F1] h-full rounded-[15px] `}
+                >
+                  <p className="p-[12px]">{chat.content}</p>
+                </div>
+                <Image
+                  width={30}
+                  height={30}
+                  alt=""
+                  src={chat.user === "sender" ? "/user.png" : "/logo.png"}
+                  className="rounded-[10px]"
+                />
+                <div
+                  className={`${
+                    chat.user === "sender" ? "hidden" : "block"
+                  } bg-[#F1F1F1] h-full rounded-[15px] `}
+                >
+                  <p className="p-[12px]">{chat.content}</p>
+                </div>
               </div>
-            </div>
-            <p className="pl-[48px] text-[12px] text-gray-400">오후 5:32</p>
-          </div>
-        </div>
-        {/* Receiver */}
-        <div className="  m-[20px]">
-          <div>
-            <div className="items-end grid grid-cols-[auto_30px] gap-x-[6px] h-full">
-              <div className=" bg-[#F1F1F1] h-full rounded-[15px] ">
-                <p className="p-[12px]">
-                  All-In-One AI 메신저, 채널톡speech_balloon 채널톡의 소중한
-                  고객님 yellow_heart 채널톡 사용 꿀팁honey_pot은 아래 가이드를
-                  통해 확인 가능합니다. 가이드 외에도 도움이 될 컨텐츠들을
-                  준비했으니 확인해주세요 smiling_face_with_3_hearts
-                </p>
-              </div>
-              <Image
-                width={30}
-                height={30}
-                alt=""
-                src="/user.png"
-                className="rounded-[10px]"
-              />
-            </div>
-            <div className="flex justify-end">
-              <p className="pr-[48px] text-[12px] text-gray-400">오후 5:32</p>
-            </div>
-          </div>
-        </div>
-        {/* sender */}
-        <div className=" m-[20px]">
-          <div>
-            <div className="items-end grid grid-cols-[30px_auto] gap-x-[6px] h-full">
-              <Image
-                width={30}
-                height={30}
-                alt=""
-                src="/logo.png"
-                className="rounded-[10px]"
-              />
-              <div className=" bg-[#F1F1F1] h-full rounded-[15px] ">
-                <p className="p-[12px]">
-                  All-In-One AI 메신저, 채널톡speech_balloon 채널톡의 소중한
-                  고객님 yellow_heart 채널톡 사용 꿀팁honey_pot은 아래 가이드를
-                  통해 확인 가능합니다. 가이드 외에도 도움이 될 컨텐츠들을
-                  준비했으니 확인해주세요 smiling_face_with_3_hearts
+              <div
+                className={`flex items-center ${
+                  chat.user === "sender" ? " justify-end" : "justify-start"
+                }`}
+              >
+                <p
+                  className={`${
+                    chat.user === "sender" ? " pr-[48px]" : "pl-[48px]"
+                  } text-[12px] text-gray-400`}
+                >
+                  {chat.date}
                 </p>
               </div>
             </div>
-            <p className="pl-[48px] text-[12px] text-gray-400">오후 5:32</p>
           </div>
-        </div>
-        {/* Receiver */}
-        <div className="  m-[20px]">
-          <div>
-            <div className="items-end grid grid-cols-[auto_30px] gap-x-[6px] h-full">
-              <div className=" bg-[#F1F1F1] h-full rounded-[15px] ">
-                <p className="p-[12px]">
-                  All-In-One AI 메신저, 채널톡speech_balloon 채널톡의 소중한
-                  고객님 yellow_heart 채널톡 사용 꿀팁honey_pot은 아래 가이드를
-                  통해 확인 가능합니다. 가이드 외에도 도움이 될 컨텐츠들을
-                  준비했으니 확인해주세요 smiling_face_with_3_hearts
-                </p>
-              </div>
-              <Image
-                width={30}
-                height={30}
-                alt=""
-                src="/user.png"
-                className="rounded-[10px]"
-              />
-            </div>
-            <div className="flex justify-end">
-              <p className="pr-[48px] text-[12px] text-gray-400">오후 5:32</p>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
   );
