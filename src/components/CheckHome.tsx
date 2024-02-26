@@ -2,7 +2,7 @@
 import { Fragment, useRef, useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Dialog, Menu, Transition } from "@headlessui/react";
-import { ServerIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { GiftIcon, ServerIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   Bars3Icon,
   CameraIcon,
@@ -10,7 +10,7 @@ import {
   MagnifyingGlassIcon,
   PhotoIcon,
 } from "@heroicons/react/20/solid";
-import { activityItems, banItems, teams, uploadURL } from "@/constants/const";
+import { activityItems, banItems, uploadURL } from "@/constants/const";
 import useSWR from "swr";
 import { ForbidList } from "./ForbidList";
 import {
@@ -19,20 +19,26 @@ import {
   useCapturedImage,
   useCheckSidebarOpened,
   useItemSidebarOpened,
+  useJourneyIndex,
+  useJourneyList,
+  useJourneyOpened,
   useMediaStream,
   useRankingFlag,
   useSearchKeyword,
+  useSidebarIndex,
 } from "@/hooks/states";
 import ItemDrawer from "./ItemDrawer";
 import { LoaderList } from "./LoaderList";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { usePathname } from "next/navigation";
+import Chatbot from "./chatbot/Chatbot";
+import ChatbotDialog from "./chatbot/ChatbotDialog";
 
 const navigation = [
   // { name: "Projects", href: "#", icon: FolderIcon, current: false },
   { name: "물품 확인", href: "#", icon: ServerIcon, current: true },
-  // { name: "Activity", href: "#", icon: SignalIcon, current: false },
+  { name: "추천 물품", href: "#", icon: GiftIcon, current: false },
   // { name: "Domains", href: "#", icon: GlobeAltIcon, current: false },
   // { name: "Usage", href: "#", icon: ChartBarSquareIcon, current: false },
   // { name: "Settings", href: "#", icon: Cog6ToothIcon, current: false },
@@ -43,19 +49,38 @@ function classNames(...classes: any) {
 }
 
 export default function CheckHome() {
+  {
+    /* common */
+  }
   const [enterFlag, setEnterFlag] = useState(false);
-  const { data: sidebarOpen, setData: setSidebarOpen } =
+  const { data: sidebarOpened, setData: setSidebarOpened } =
     useCheckSidebarOpened();
+  {
+    /* search */
+  }
   const { data: searchKeyword, setData: setSearchKeyword } = useSearchKeyword();
-  const { data: isCameraOpened, setData: setCameraOpened } = useCameraOpened();
 
+  {
+    /* camera */
+  }
+  const { data: isCameraOpened, setData: setCameraOpened } = useCameraOpened();
   const { data: mediaStream, setData: setMediaStream } = useMediaStream();
   const { data: capturedImage, setData: setCapturedImage } = useCapturedImage();
   const { data: isCameraStarted, setData: setIsCameraStarted } =
     useCameraStarted();
+  {
+    /* etc */
+  }
   const { data: rankingFlag, setData: setRankingFlag } = useRankingFlag();
   const { data: itemSidebarOpened, setData: setItemSidebarOpened } =
     useItemSidebarOpened();
+  const { data: sidebarIndex, setData: setSidebarIndex } = useSidebarIndex();
+  {
+    /* journey */
+  }
+  const { data: journeyList, setData: setJourneyList } = useJourneyList();
+  const { data: journeyIndex, setData: setJourneyIndex } = useJourneyIndex();
+  const { data: journeyOpened, setData: setJourneyOpened } = useJourneyOpened();
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -184,7 +209,8 @@ export default function CheckHome() {
             role="status"
             className="space-y-8 animate-pulse md:space-y-0 md:space-x-8 rtl:space-x-reverse md:flex md:items-center"
           >
-            <div className="flex items-center justify-center w-full h-48 md:bg-gray-300 rounded sm:w-96 dark:bg-gray-700">
+            <div className="flex items-center justify-center w-full h-48 md:bg-gray-300 rounded sm:w-96 ">
+              {/* dark:bg-gray-700 */}
               <svg
                 className="w-10 h-10 text-gray-200 dark:text-gray-600"
                 aria-hidden="true"
@@ -238,12 +264,12 @@ export default function CheckHome() {
   return (
     <html className="h-full bg-gray-900">
       <ItemDrawer />
-      <body className="h-full">
-        <Transition.Root show={sidebarOpen} as={Fragment}>
+      <body className="h-full ">
+        <Transition.Root show={sidebarOpened} as={Fragment}>
           <Dialog
             as="div"
-            className="relative z-50 xl:hidden"
-            onClose={setSidebarOpen}
+            className="relative z-40 xl:hidden"
+            onClose={setSidebarOpened}
           >
             <Transition.Child
               as={Fragment}
@@ -254,7 +280,8 @@ export default function CheckHome() {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <div className="fixed inset-0 bg-gray-900/80" />
+              <div className="fixed inset-0 " />
+              {/* bg-gray-900/80 */}
             </Transition.Child>
 
             <div className="fixed inset-0 flex">
@@ -281,7 +308,7 @@ export default function CheckHome() {
                       <button
                         type="button"
                         className="-m-2.5 p-2.5"
-                        onClick={() => setSidebarOpen(false)}
+                        onClick={() => setSidebarOpened(false)}
                       >
                         <span className="sr-only">Close sidebar</span>
                         <XMarkIcon
@@ -293,7 +320,7 @@ export default function CheckHome() {
                   </Transition.Child>
                   {/* Sidebar component, swap this element with another sidebar if you like */}
 
-                  <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-gray-900 px-6 ring-1 ring-white/10">
+                  <div className="flex grow flex-col gap-y-5 overflow-y-auto  px-6 ring-1 ring-white/10">
                     <Link href="/" className="cursor-pointer">
                       <div className="flex h-16 shrink-0 items-center">
                         <svg
@@ -351,22 +378,24 @@ export default function CheckHome() {
                           <div className="text-xs font-semibold leading-6 text-gray-400">
                             여행 목록
                           </div>
+
                           <ul role="list" className="-mx-2 mt-2 space-y-1">
-                            {teams.map((team) => (
-                              <li key={team.name}>
+                            {journeyList.map((journeyPair, index) => (
+                              <li key={index}>
                                 <a
-                                  href={team.href}
                                   className={classNames(
-                                    team.current
+                                    journeyIndex === index
                                       ? "bg-gray-800 text-white"
                                       : "text-gray-400 hover:text-white hover:bg-gray-800",
                                     "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                                   )}
                                 >
                                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white">
-                                    {team.initial}
+                                    {index + 1}
                                   </span>
-                                  <span className="truncate">{team.name}</span>
+                                  <span className="truncate">
+                                    {journeyPair.arriveCountry}
+                                  </span>
                                 </a>
                               </li>
                             ))}
@@ -378,7 +407,7 @@ export default function CheckHome() {
                             className="flex items-center gap-x-4 px-6 py-3 text-sm font-semibold leading-6 text-white hover:bg-gray-800"
                           >
                             <img
-                              className="h-8 w-8 rounded-full bg-gray-800"
+                              className="h-8 w-8 rounded-full "
                               src="/biryong.png"
                               alt=""
                             />
@@ -431,14 +460,19 @@ export default function CheckHome() {
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
                   <ul role="list" className="-mx-2 space-y-1">
-                    {navigation.map((item) => (
-                      <li key={item.name}>
+                    {navigation.map((item, _i) => (
+                      <li
+                        key={item.name}
+                        onClick={() => {
+                          setSidebarIndex(_i);
+                        }}
+                      >
                         <a
                           href={item.href}
                           className={classNames(
                             item.current
-                              ? "bg-gray-800 text-white"
-                              : "text-gray-400 hover:text-white hover:bg-gray-800",
+                              ? " text-white hover:bg-gray-800"
+                              : "text-gray-400 hover:text-white hover:bg-gray-800 ",
                             "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
                           )}
                         >
@@ -456,22 +490,41 @@ export default function CheckHome() {
                   <div className="text-xs font-semibold leading-6 text-gray-400">
                     여행 목록
                   </div>
+                  <div className="h-[1px] my-[12px] bg-[#696F7C]" />
+                  <button
+                    onClick={() => {
+                      setJourneyOpened(true);
+                    }}
+                    className="bg-[#F77F2F] my-[8px] w-full hover:bg-opacity-80 text-white  py-[8px] px-[16px] rounded-full mt-[4px]"
+                  >
+                    새 행선지 추가
+                  </button>
                   <ul role="list" className="-mx-2 mt-2 space-y-1">
-                    {teams.map((team) => (
-                      <li key={team.name}>
+                    {journeyList.map((journeyPair, index) => (
+                      <li
+                        key={index}
+                        onClick={() => {
+                          setJourneyIndex(index);
+                        }}
+                      >
                         <a
-                          href={team.href}
                           className={classNames(
-                            team.current
-                              ? "bg-gray-800 text-white"
-                              : "text-gray-400 hover:text-white hover:bg-gray-800",
-                            "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+                            journeyIndex === index
+                              ? "text-white bg-gray-800 "
+                              : "text-gray-400 hover:text-white",
+                            "group cursor-pointer flex gap-x-3 rounded-md p-2 hover:bg-gray-800  text-sm leading-6 font-semibold"
                           )}
                         >
-                          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-[0.625rem] font-medium text-gray-400 group-hover:text-white">
-                            {team.initial}
+                          <span
+                            className={`${
+                              journeyIndex === index ? "text-white" : ""
+                            } flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-gray-700 text-[0.625rem] font-medium text-gray-400 group-hover:text-white`}
+                          >
+                            {index + 1}
                           </span>
-                          <span className="truncate">{team.name}</span>
+                          <span className="truncate">
+                            🇰🇷 한국 &nbsp;→&nbsp; {journeyPair.arriveCountry}
+                          </span>
                         </a>
                       </li>
                     ))}
@@ -498,11 +551,11 @@ export default function CheckHome() {
 
         <div className="xl:pl-72">
           {/* Sticky search header */}
-          <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-6 border-b border-white/5 bg-gray-900 px-4 shadow-sm sm:px-6 lg:px-8">
+          <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-6 border-b border-white/5 px-4 shadow-sm sm:px-6 lg:px-8">
             <button
               type="button"
               className="-m-2.5 p-2.5 text-white xl:hidden"
-              onClick={() => setSidebarOpen(true)}
+              onClick={() => setSidebarOpened(true)}
             >
               <span className="sr-only">Open sidebar</span>
               <Bars3Icon className="h-5 w-5" aria-hidden="true" />
@@ -539,7 +592,9 @@ export default function CheckHome() {
                     autoComplete="off"
                     id="search-field"
                     className="block h-full w-full border-0 bg-transparent py-0 pl-8 pr-0 text-white focus:ring-0 sm:text-sm"
-                    placeholder="반입 물품을 입력해보세요"
+                    placeholder={`${
+                      sidebarIndex === 0 ? "반입" : "추천"
+                    } 물품을 입력해보세요`}
                     // 반입 물품을 확인해보세요
                     // type="search"
                     // name="search"
@@ -596,54 +651,138 @@ export default function CheckHome() {
               </form>
             </div>
           </div>
-
-          <main className="lg:pr-96">
-            {isCameraOpened === true && searchKeyword === "" ? (
-              isCameraStarted === true ? (
-                <div
-                  className="bg-black relative"
-                  style={{ height: "calc(100vh - 4rem)" }}
-                >
-                  <div className="flex h-full items-center justify-center">
-                    <video
-                      className="w-full max-h-full object-contain"
-                      ref={videoRef}
-                      autoPlay
-                      playsInline
-                    />
-                  </div>
-
-                  <button
-                    className="cursor-pointer absolute bottom-20 w-24 h-24 bg-white rounded-full mx-auto border-double border-2 border-gray-300 left-1/2 transform -translate-x-1/2"
-                    onClick={handleButtonClick}
+          {sidebarIndex === 0 && (
+            <main className="lg:pr-96">
+              {isCameraOpened === true && searchKeyword === "" ? (
+                isCameraStarted === true ? (
+                  <div
+                    className="bg-black relative"
+                    style={{ height: "calc(100vh - 4rem)" }}
                   >
-                    <CameraIcon
-                      className="cursor-pointer w-10 m-auto text-gray-400"
-                      // pointer-events-none
-                      aria-hidden="true"
-                    />
-                  </button>
-                </div>
-              ) : (
-                <CameraSection />
-              )
-            ) : (
-              <div>
-                <div className={`${searchKeyword === "" ? "" : ""}`}>
-                  {/* lg:block hidden */}
-                  <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-                    <h1 className="text-base font-semibold leading-7 text-white">
-                      반입 물품 확인
-                    </h1>
+                    <div className="flex h-full items-center justify-center">
+                      <video
+                        className="w-full max-h-full object-contain"
+                        ref={videoRef}
+                        autoPlay
+                        playsInline
+                      />
+                    </div>
 
-                    <Menu as="div" className="relative">
-                      <Menu.Button className="flex items-center gap-x-1 text-sm font-medium leading-6 text-white">
+                    <button
+                      className="cursor-pointer absolute bottom-20 w-24 h-24 bg-white rounded-full mx-auto border-double border-2 border-gray-300 left-1/2 transform -translate-x-1/2"
+                      onClick={handleButtonClick}
+                    >
+                      <CameraIcon
+                        className="cursor-pointer w-10 m-auto text-gray-400"
+                        // pointer-events-none
+                        aria-hidden="true"
+                      />
+                    </button>
+                  </div>
+                ) : (
+                  <CameraSection />
+                )
+              ) : (
+                <div>
+                  <div className={`${searchKeyword === "" ? "" : ""}`}>
+                    {/* lg:block hidden */}
+                    <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+                      <div className="flex justify-start items-center">
+                        <h1 className="text-base font-semibold leading-7 text-white">
+                          반입 물품 확인
+                        </h1>
+                        <div className="ml-[16px] flex items-end justify-start">
+                          <span
+                            className={` text-white p-2 text-sm leading-6 font-semibold truncate ${
+                              journeyList.length === 0 ? "hidden" : ""
+                            }`}
+                          >
+                            🇰🇷 한국 &nbsp;→&nbsp;
+                            {
+                              (
+                                journeyList[journeyIndex] || {
+                                  arriveCountry: "",
+                                }
+                              ).arriveCountry
+                            }{" "}
+                          </span>
+                        </div>
+                      </div>
+
+                      <Menu as="div" className="relative">
+                        {/* <Menu.Button className="flex items-center gap-x-1 text-sm font-medium leading-6 text-white">
                         정렬 기준
                         <ChevronUpDownIcon
                           className="h-5 w-5 text-gray-500"
                           aria-hidden="true"
                         />
-                      </Menu.Button>
+                      </Menu.Button> */}
+                        <Transition
+                          as={Fragment}
+                          enter="transition ease-out duration-100"
+                          enterFrom="transform opacity-0 scale-95"
+                          enterTo="transform opacity-100 scale-100"
+                          leave="transition ease-in duration-75"
+                          leaveFrom="transform opacity-100 scale-100"
+                          leaveTo="transform opacity-0 scale-95"
+                        >
+                          <Menu.Items className="absolute right-0 z-10 mt-2.5 w-40 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                            <Menu.Item>
+                              {({ active }) => (
+                                <a
+                                  href="#"
+                                  className={classNames(
+                                    active ? "bg-gray-50" : "",
+                                    "block px-3 py-1 text-sm leading-6 text-gray-900"
+                                  )}
+                                >
+                                  이름
+                                </a>
+                              )}
+                            </Menu.Item>
+
+                            <Menu.Item>
+                              {({ active }) => (
+                                <a
+                                  href="#"
+                                  className={classNames(
+                                    active ? "bg-gray-50" : "",
+                                    "block px-3 py-1 text-sm leading-6 text-gray-900"
+                                  )}
+                                >
+                                  위험도
+                                </a>
+                              )}
+                            </Menu.Item>
+                          </Menu.Items>
+                        </Transition>
+                      </Menu>
+                    </header>
+                  </div>
+                  <ForbidList />
+                </div>
+              )}
+            </main>
+          )}
+
+          {sidebarIndex === 1 && (
+            <main className="lg:pr-96">
+              <div>
+                <div className={`${searchKeyword === "" ? "" : ""}`}>
+                  {/* lg:block hidden */}
+                  <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+                    <h1 className="text-base font-semibold leading-7 text-white">
+                      추천 물품 확인
+                    </h1>
+
+                    <Menu as="div" className="relative">
+                      {/* <Menu.Button className="flex items-center gap-x-1 text-sm font-medium leading-6 text-white">
+                        정렬 기준
+                        <ChevronUpDownIcon
+                          className="h-5 w-5 text-gray-500"
+                          aria-hidden="true"
+                        />
+                      </Menu.Button> */}
                       <Transition
                         as={Fragment}
                         enter="transition ease-out duration-100"
@@ -688,14 +827,14 @@ export default function CheckHome() {
                 </div>
                 <ForbidList />
               </div>
-            )}
-          </main>
+            </main>
+          )}
 
           {/* Activity feed */}
           <aside className="lg:block hidden bg-black/10 lg:fixed lg:bottom-0 lg:right-0 lg:top-16 lg:w-96 lg:overflow-y-auto lg:border-l lg:border-white/5">
             <header className="flex items-center justify-between border-b border-white/5 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
               <h2 className="text-base font-semibold leading-7 text-white">
-                {rankingFlag === false ? "검색 랭킹" : "적발 랭킹"}
+                {rankingFlag === false ? "아이템 랭킹" : "유저 랭킹"}
               </h2>
               <a
                 href="#"
@@ -704,7 +843,7 @@ export default function CheckHome() {
                 }}
                 className="text-sm font-semibold leading-6 text-orange-400"
               >
-                {rankingFlag === false ? "적발 랭킹" : "검색 랭킹"}
+                {rankingFlag === false ? "유저 랭킹" : "아이템 랭킹"}
               </a>
             </header>
             <ul role="list" className="divide-y divide-white/5">
