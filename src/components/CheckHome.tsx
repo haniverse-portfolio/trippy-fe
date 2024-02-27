@@ -41,6 +41,7 @@ import Chatbot from "./chatbot/Chatbot";
 import ChatbotDialog from "./chatbot/ChatbotDialog";
 import ItemDrawer from "./ItemDrawer";
 import { RecommendList } from "./RecommendList";
+import { error } from "console";
 
 const navigation = [
   // { name: "Projects", href: "#", icon: FolderIcon, current: false },
@@ -91,6 +92,58 @@ export default function CheckHome() {
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
+  const scanWebSocketRef = useRef<WebSocket | null>(null);
+
+  const stream = async () => {
+    scanWebSocketRef.current = new WebSocket(
+      "ws://165.246.80.7:8000/uploadvideo"
+    );
+
+    scanWebSocketRef.current.onopen = function (event) {
+      console.log("websocket is connected");
+    };
+
+    scanWebSocketRef.current.onmessage = function (event) {
+      alert("메세지 옴");
+      //   var msg = event.data;
+      //   if (typeof msg === "string") {
+      //     console.log(msg);
+      //     if (scannedElementRef.current) scannedElementRef.current.innerText = msg;
+      //   } else {
+      //     const blob = new Blob([event.data], { type: "image/mp4" });
+      //     const stream = URL.createObjectURL(blob);
+      //     if (AIvideoRef.current) AIvideoRef.current.src = stream;
+      //   }
+    };
+
+    scanWebSocketRef.current.onclose = function (event) {
+      // console.log("websocket is closed");
+      // if (intervalId1Ref.current) clearInterval(intervalId1Ref.current);
+      // if (intervalId2Ref.current) clearInterval(intervalId2Ref.current);
+    };
+    const constraints: MediaStreamConstraints = {
+      video: {
+        width: 640,
+        height: 640,
+      },
+    };
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    if (videoRef.current) videoRef.current.srcObject = stream;
+
+    setInterval(function () {
+      capturePhoto();
+    }, 1000 / 40);
+  };
+
+  //   intervalId2Ref.current = setInterval(function () {
+  //     const blob = new Blob(chunks, { type: "video/webm" });
+  //     scanWebSocketRef.current?.send(blob);
+  //     chunks = [];
+  //   }, 1000 / 5);
+  // } catch (err) {
+  //   console.error("Error accessing camera:", err);
+  // }
+
   const startCamera = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -117,12 +170,22 @@ export default function CheckHome() {
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
       const context = canvas.getContext("2d");
+      console.log("함수 안");
       if (context) {
+        console.log("context 있음");
         context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-        const capturedImageDataUrl = canvas.toDataURL("image/jpeg");
-        {
-          /* send */
-        }
+        canvas.toBlob((blob) => {
+          if (blob && scanWebSocketRef.current) {
+            console.log("blob 있음");
+            scanWebSocketRef.current.send(blob);
+          }
+        });
+        // const capturedImageDataUrl = canvas.toDataURL("image/jpeg");
+        // {
+        //   if (scanWebSocketRef.current) {
+        //     scanWebSocketRef.current.send(capturedImageDataUrl);
+        //   }
+        // }
       }
     }
   };
@@ -644,6 +707,7 @@ export default function CheckHome() {
                   {isCameraOpened === false ? (
                     <CameraIcon
                       onClick={async () => {
+                        stream();
                         await setSearchKeyword("");
                         await setCameraOpened(true);
                         await startCamera();
