@@ -90,50 +90,9 @@ export default function CheckHome() {
   const { data: journeyIndex, setData: setJourneyIndex } = useJourneyIndex();
   const { data: journeyOpened, setData: setJourneyOpened } = useJourneyOpened();
 
+  const { data: capturedImage, setData: setCapturedImage } = useCapturedImage();
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  const scanWebSocketRef = useRef<WebSocket | null>(null);
-
-  const stream = async () => {
-    scanWebSocketRef.current = new WebSocket(
-      "ws://165.246.80.7:8000/uploadvideo"
-    );
-
-    scanWebSocketRef.current.onopen = function (event) {
-      console.log("websocket is connected");
-    };
-
-    scanWebSocketRef.current.onmessage = function (event) {
-      alert("메세지 옴");
-      //   var msg = event.data;
-      //   if (typeof msg === "string") {
-      //     console.log(msg);
-      //     if (scannedElementRef.current) scannedElementRef.current.innerText = msg;
-      //   } else {
-      //     const blob = new Blob([event.data], { type: "image/mp4" });
-      //     const stream = URL.createObjectURL(blob);
-      //     if (AIvideoRef.current) AIvideoRef.current.src = stream;
-      //   }
-    };
-
-    scanWebSocketRef.current.onclose = function (event) {
-      // console.log("websocket is closed");
-      // if (intervalId1Ref.current) clearInterval(intervalId1Ref.current);
-      // if (intervalId2Ref.current) clearInterval(intervalId2Ref.current);
-    };
-    const constraints: MediaStreamConstraints = {
-      video: {
-        width: 640,
-        height: 640,
-      },
-    };
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    if (videoRef.current) videoRef.current.srcObject = stream;
-
-    setInterval(function () {
-      capturePhoto();
-    }, 1000 / 40);
-  };
 
   //   intervalId2Ref.current = setInterval(function () {
   //     const blob = new Blob(chunks, { type: "video/webm" });
@@ -170,22 +129,10 @@ export default function CheckHome() {
       canvas.width = videoRef.current.videoWidth;
       canvas.height = videoRef.current.videoHeight;
       const context = canvas.getContext("2d");
-      console.log("함수 안");
       if (context) {
-        console.log("context 있음");
         context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob((blob) => {
-          if (blob && scanWebSocketRef.current) {
-            console.log("blob 있음");
-            scanWebSocketRef.current.send(blob);
-          }
-        });
-        // const capturedImageDataUrl = canvas.toDataURL("image/jpeg");
-        // {
-        //   if (scanWebSocketRef.current) {
-        //     scanWebSocketRef.current.send(capturedImageDataUrl);
-        //   }
-        // }
+        const capturedImageDataUrl = canvas.toDataURL("image/jpeg");
+        setCapturedImage(capturedImageDataUrl);
       }
     }
   };
@@ -707,7 +654,6 @@ export default function CheckHome() {
                   {isCameraOpened === false ? (
                     <CameraIcon
                       onClick={async () => {
-                        stream();
                         await setSearchKeyword("");
                         await setCameraOpened(true);
                         await startCamera();
@@ -762,7 +708,7 @@ export default function CheckHome() {
                         playsInline
                       />
                     </div>
-                    {/* 
+
                     <button
                       className="cursor-pointer absolute bottom-20 w-24 h-24 bg-white rounded-full mx-auto border-double border-2 border-gray-300 left-1/2 transform -translate-x-1/2"
                       onClick={handleButtonClick}
@@ -772,7 +718,7 @@ export default function CheckHome() {
                         // pointer-events-none
                         aria-hidden="true"
                       />
-                    </button> */}
+                    </button>
                   </div>
                 ) : (
                   <CameraSection />
