@@ -40,7 +40,7 @@ export default function ChatbotDialog() {
     return `${ampm} ${formattedHours}:${formattedMinutes}`;
   };
   const postMessage = () => {
-    const url = "http://165.246.80.7:8000/chatbot/";
+    const url = "http://13.124.243.62/chatbot/";
     fetcher(url)
       .then((response) => {
         console.log("Message sent successfully:", response);
