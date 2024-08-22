@@ -158,7 +158,9 @@ interface Chat {
 
 export const useChatList = () => {
   const { data, mutate } = useSWRImmutable<Chat[]>("chatList", {
-    fallbackData: [],
+    fallbackData: [
+      {date:"오전 10:00", user:"receiver", content:"안녕하세요! 여행을 준비하시나요?"},
+    ],
     revalidateOnReconnect: false,
   });
 
