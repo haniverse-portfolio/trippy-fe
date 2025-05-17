@@ -2,6 +2,8 @@
 
 Trippy.kr은 이미지 인식 기술을 활용하여 항공기 기내 반입 가능 여부를 판별해주는 서비스입니다. 여행객들이 공항 보안 검색대에서 불필요한 지연이나 물품 압수를 방지할 수 있도록 도와줍니다.
 
+[![Video Label](http://img.youtube.com/vi/7RaNWvWR1sU/0.jpg)](https://youtu.be/7RaNWvWR1sU)
+
 🔗 **웹사이트 주소**: [https://trippy.kr](https://trippy.kr)
 
 ## 프로젝트 개요
